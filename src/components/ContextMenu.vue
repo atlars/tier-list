@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 export interface ContextMenuItem {
   name: string
@@ -18,8 +18,13 @@ const emit = defineEmits<{
   itemSelected: [name: string]
 }>()
 
+const isVisible = ref(false)
+const top = ref(0)
+const left = ref(0)
+const menu = ref<HTMLElement | null>(null)
+
 onMounted(() => {
-    document.addEventListener('keyup', onEscKeyRelease)
+  document.addEventListener('keyup', onEscKeyRelease)
 })
 
 onBeforeUnmount(() => {
@@ -31,26 +36,33 @@ function onEscKeyRelease(event: KeyboardEvent) {
 }
 
 function open(event: MouseEvent) {
-  var menu = document.getElementById(props.menuId)
-  if (!menu) return
+  if (!menu.value) return
 
-  if (menu.offsetWidth + event.pageX >= window.innerWidth) {
-    menu.style.left = event.pageX - menu.offsetWidth + 2 + 'px'
-  } else {
-    menu.style.left = event.pageX - 2 + 'px'
+  if (top.value <= 0 || left.value <= 0) {
+    menu.value.style.visibility = 'hidden'
+    menu.value.style.display = 'block'
+    menu.value.removeAttribute('style')
   }
 
-  if (menu.offsetHeight + event.pageY >= window.innerHeight) {
-    menu.style.top = event.pageY - menu.offsetHeight + 2 + 'px'
+  if (menu.value.offsetWidth + event.pageX >= window.innerWidth) {
+    left.value = event.pageX - menu.value.offsetWidth + 2
   } else {
-    menu.style.top = event.pageY - 2 + 'px'
+    left.value = event.pageX - 2
   }
-  menu.style.display = 'block'
+
+  if (menu.value.offsetHeight + event.pageY >= window.innerHeight) {
+    top.value = event.pageY - menu.value.offsetHeight + 2
+  } else {
+    top.value = event.pageY - 2
+  }
+
+  isVisible.value = true
 }
 
 function close() {
-  var menu = document.getElementById(props.menuId)
-  if (menu) menu.style.display = 'none'
+  isVisible.value = false
+  top.value = 0
+  left.value = 0
 }
 
 function menuItemClicked(name: string) {
@@ -66,8 +78,11 @@ defineExpose({
 
 <template>
   <div
-    class="fixed z-50 hidden cursor-default divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
+    class="fixed z-50 cursor-default divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
     v-click-outside="close"
+    :style="{ top: top + 'px', left: left + 'px' }"
+    ref="menu"
+    v-show="isVisible"
   >
     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
       <li v-for="(item, index) in props.items" :key="index">
