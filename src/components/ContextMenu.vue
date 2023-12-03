@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 
 export interface ContextMenuItem {
   name: string
-  type?: 'divider'
   icon?: 'edit' | 'delete'
 }
 
@@ -66,9 +66,10 @@ function close() {
 }
 
 function menuItemClicked(name: string) {
-  close()
   emit('itemSelected', name)
 }
+
+onClickOutside(menu, close)
 
 defineExpose({
   open,
@@ -79,7 +80,6 @@ defineExpose({
 <template>
   <div
     class="fixed z-50 cursor-default divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
-    v-click-outside="close"
     :style="{ top: top + 'px', left: left + 'px' }"
     ref="menu"
     v-show="isVisible"
