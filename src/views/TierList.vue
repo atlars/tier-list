@@ -42,38 +42,7 @@ const tierRows = ref<TierRowData[]>([
   }
 ])
 
-const availableElements = ref<TierElementData[]>([
-  {
-    id: '0',
-    name: 'Test123',
-    color: '#FF0000'
-  },
-  {
-    id: '1',
-    name: 'Test1234',
-    color: '#FF0000'
-  },
-  {
-    id: '2',
-    name: 'Test1234',
-    color: '#FF0000'
-  },
-  {
-    id: '3',
-    name: 'Test12345',
-    color: '#FF0000'
-  },
-  {
-    id: '4',
-    name: 'Test126',
-    color: '#FF0000'
-  },
-  {
-    id: '5',
-    name: 'Test12347',
-    color: '#FF0000'
-  }
-])
+const availableElements = ref<TierElementData[]>([])
 
 const drag = ref(false)
 
@@ -93,6 +62,10 @@ const contextMenuItems: ContextMenuItem[] = [
 
 function openContextMenu(event: MouseEvent, tierElement: TierElementData) {
   contextMenu.value?.open(event, tierElement)
+}
+
+function closeContextMenu() {
+  contextMenu.value?.close()
 }
 
 function contextMenuItemSelected(name: string, tierElement: TierElementData) {
@@ -115,13 +88,13 @@ function elementDialogClosed(element: TierElementData, createElement: boolean) {
   }
 
   // Find and update edited element
-  let index = availableElements.value.findIndex(e => e.id === element.id)
-  if(index <= -1) {
-    tierRows.value.forEach(row => {
-      index = row.elements.findIndex(e => e.id === element.id)
-      if(index <= 0) row.elements[index] = element
+  let index = availableElements.value.findIndex((e) => e.id === element.id)
+  if (index <= -1) {
+    tierRows.value.forEach((row) => {
+      index = row.elements.findIndex((e) => e.id === element.id)
+      if (index <= 0) row.elements[index] = element
     })
-  }else{
+  } else {
     availableElements.value[index] = element
   }
 }
@@ -162,6 +135,7 @@ function elementDialogClosed(element: TierElementData, createElement: boolean) {
                 type: 'transition-group',
                 class: 'flex flex-row w-full gap-1 flex-wrap items-start mx-1'
               }"
+              @start="closeContextMenu"
             >
               <template #item="{ element }">
                 <TierElement
@@ -176,7 +150,7 @@ function elementDialogClosed(element: TierElementData, createElement: boolean) {
     </draggable>
 
     <!--- Available tier items -->
-    <div class="mt-4 min-h-[6.5rem] border border-gray-300 bg-slate-200 p-4">
+    <div class="mt-4 min-h-[7.0rem] border border-gray-300 bg-slate-200 p-4">
       <draggable
         :list="availableElements"
         item-key="id"
@@ -186,6 +160,7 @@ function elementDialogClosed(element: TierElementData, createElement: boolean) {
           name: 'available-element',
           class: 'flex flex-row flex-wrap items-center w-full gap-3'
         }"
+        @start="closeContextMenu"
       >
         <template #item="{ element }">
           <TierElement :element="element" @contextmenu.prevent="openContextMenu($event, element)" />
@@ -193,7 +168,7 @@ function elementDialogClosed(element: TierElementData, createElement: boolean) {
 
         <template #footer>
           <div
-            class="marker flex h-16 w-16 cursor-pointer items-center justify-center rounded border-2 border-gray-600 transition-transform hover:scale-105"
+            class="marker flex h-18 w-18 cursor-pointer items-center justify-center rounded border-2 border-gray-600 transition-transform hover:scale-105"
             @click="elementDialog?.open()"
           >
             <svg

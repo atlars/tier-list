@@ -2,6 +2,7 @@
 import type { TierElementData } from '@/views/TierList.vue'
 import { onClickOutside } from '@vueuse/core'
 import { ref } from 'vue'
+import { v4 as uuid } from 'uuid';
 
 const isVisible = ref(false)
 const modal = ref<HTMLElement | null>(null)
@@ -13,11 +14,11 @@ const editElement = ref(false)
 
 function open(element?: TierElementData) {
   editElement.value = element != undefined
-  console.log(editElement.value)
   tierElement.value = {
     ...templateElement,
     ...element
   }
+  if(!editElement.value) tierElement.value.id = uuid()
   isVisible.value = true
 }
 
@@ -96,7 +97,7 @@ defineExpose({
                   class="rounded-e-0 inline-flex items-center rounded-s-md border border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400"
                 >
                   <svg
-                    class="h-6 w-6 fill-gray-600"
+                    class="h-6 w-6 fill-gray-600 dark:fill-white"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 -960 960 960"
                   >
@@ -112,7 +113,7 @@ defineExpose({
                   v-model="tierElement.imageUrl"
                 />
               </div>
-              <span class="px-4">or</span>
+              <span class="px-4 dark:text-white">or</span>
               <input
                 id="style1"
                 class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
