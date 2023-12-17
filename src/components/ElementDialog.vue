@@ -4,20 +4,22 @@ import { ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 
 const isVisible = ref(false)
-const tierElement = ref<TierElementData>({ name: '' })
 const modal = ref<HTMLElement | null>(null)
 
 const emit = defineEmits<{
   onClose: [element: TierElementData]
 }>()
 
+const tierElement = ref({id: "-1"})
+
 function close() {
   isVisible.value = false
   emit('onClose', tierElement.value)
 }
 
-function open() {
+function open(element?: TierElementData) {
   isVisible.value = true
+  if(element) tierElement.value = element
 }
 
 onClickOutside(modal, close)
@@ -41,7 +43,7 @@ defineExpose({
           <div
             class="flex items-center justify-between rounded-t border-b p-4 dark:border-gray-600 md:p-5"
           >
-            <h3 class="text-xl font-medium text-gray-900 dark:text-white">Default modal</h3>
+            <h3 class="text-xl font-medium text-gray-900 dark:text-white">Create element</h3>
             <button
               type="button"
               class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"

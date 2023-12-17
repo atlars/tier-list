@@ -15,10 +15,12 @@ interface ContextMenuProps {
 const props = defineProps<ContextMenuProps>()
 
 const emit = defineEmits<{
-  itemSelected: [name: string]
+  itemSelected: [name: string, context: string]
 }>()
 
 const isVisible = ref(false)
+// Unique identifier for the active context menu
+const context = ref<string>("")
 const top = ref(0)
 const left = ref(0)
 const menu = ref<HTMLElement | null>(null)
@@ -35,7 +37,7 @@ function onEscKeyRelease(event: KeyboardEvent) {
   if (event.key === 'Escape') close()
 }
 
-function open(event: MouseEvent) {
+function open(event: MouseEvent, menuContext: string) {
   if (!menu.value) return
 
   if (top.value <= 0 || left.value <= 0) {
@@ -57,6 +59,7 @@ function open(event: MouseEvent) {
   }
 
   isVisible.value = true
+  context.value = menuContext
 }
 
 function close() {
@@ -66,7 +69,8 @@ function close() {
 }
 
 function menuItemClicked(name: string) {
-  emit('itemSelected', name)
+  emit('itemSelected', name, context.value)
+  close()
 }
 
 onClickOutside(menu, close)
