@@ -12,7 +12,8 @@ const tierElement = ref<TierElementData>(templateElement)
 const editElement = ref(false)
 
 function open(element?: TierElementData) {
-  editElement.value = element !== undefined
+  editElement.value = element != undefined
+  console.log(editElement.value)
   tierElement.value = {
     ...templateElement,
     ...element
@@ -22,13 +23,13 @@ function open(element?: TierElementData) {
 
 function close() {
   isVisible.value = false
-  emit('onClose', tierElement.value)
+  emit('close', tierElement.value, !editElement.value)
 }
 
 onClickOutside(modal, close)
 
 const emit = defineEmits<{
-  onClose: [element: TierElementData]
+  close: [element: TierElementData, createElement: boolean]
 }>()
 
 defineExpose({

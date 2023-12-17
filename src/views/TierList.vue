@@ -14,12 +14,12 @@ interface TierRowData {
 
 export interface TierElementData {
   id: string
-  name?: string
-  color?: string
+  name: string
+  color: string
   imageUrl?: string
 }
 
-const items = ref<TierRowData[]>([
+const tierRows = ref<TierRowData[]>([
   {
     id: '0',
     name: 'Test 1',
@@ -45,27 +45,33 @@ const items = ref<TierRowData[]>([
 const availableElements = ref<TierElementData[]>([
   {
     id: '0',
-    name: 'Test123'
+    name: 'Test123',
+    color: '#FF0000'
   },
   {
     id: '1',
-    name: 'Test1234'
+    name: 'Test1234',
+    color: '#FF0000'
   },
   {
     id: '2',
-    name: 'Test1234'
+    name: 'Test1234',
+    color: '#FF0000'
   },
   {
     id: '3',
-    name: 'Test12345'
+    name: 'Test12345',
+    color: '#FF0000'
   },
   {
     id: '4',
-    name: 'Test126'
+    name: 'Test126',
+    color: '#FF0000'
   },
   {
     id: '5',
-    name: 'Test12347'
+    name: 'Test12347',
+    color: '#FF0000'
   }
 ])
 
@@ -91,12 +97,32 @@ function openContextMenu(event: MouseEvent, tierElement: TierElementData) {
 
 function contextMenuItemSelected(name: string, tierElement: TierElementData) {
   if (name === 'Delete') {
-    availableElements.value = availableElements.value.filter((element) => element.id !== tierElement.id)
-    items.value.forEach((item) => {
+    availableElements.value = availableElements.value.filter(
+      (element) => element.id !== tierElement.id
+    )
+    tierRows.value.forEach((item) => {
       item.elements = item.elements.filter((element) => element.id !== tierElement.id)
     })
-  }else if(name === "Edit") {
+  } else if (name === 'Edit') {
     elementDialog.value?.open(tierElement)
+  }
+}
+
+function elementDialogClosed(element: TierElementData, createElement: boolean) {
+  if (createElement) {
+    availableElements.value.push(element)
+    return
+  }
+
+  // Find and update edited element
+  let index = availableElements.value.findIndex(e => e.id === element.id)
+  if(index <= -1) {
+    tierRows.value.forEach(row => {
+      index = row.elements.findIndex(e => e.id === element.id)
+      if(index <= 0) row.elements[index] = element
+    })
+  }else{
+    availableElements.value[index] = element
   }
 }
 </script>
@@ -106,12 +132,12 @@ function contextMenuItemSelected(name: string, tierElement: TierElementData) {
     <!--- Tier rows -->
     <draggable
       class="bg-blue-500"
-      :list="items"
+      :list="tierRows"
       item-key="id"
       :group="{ name: 'tier-rows' }"
       handle=".handle"
       ghost-class="bg-gray-500"
-      animation="300"
+      animation="200"
       :component-data="{
         name: !drag ? 'flip-list' : null,
         type: 'transition-group',
@@ -130,15 +156,18 @@ function contextMenuItemSelected(name: string, tierElement: TierElementData) {
               :list="element.elements"
               :group="{ name: 'tier-elements' }"
               item-key="id"
-              animation="300"
+              animation="200"
               :component-data="{
                 name: 'tier-element',
                 type: 'transition-group',
-                class: 'flex flex-row w-full gap-1 flex-wrap items-center mx-1'
+                class: 'flex flex-row w-full gap-1 flex-wrap items-start mx-1'
               }"
             >
-              <template #item>
-                <TierElement @contextmenu.prevent="openContextMenu($event, element)" />
+              <template #item="{ element }">
+                <TierElement
+                  :element="element"
+                  @contextmenu.prevent="openContextMenu($event, element)"
+                />
               </template>
             </draggable>
           </template>
@@ -159,13 +188,13 @@ function contextMenuItemSelected(name: string, tierElement: TierElementData) {
         }"
       >
         <template #item="{ element }">
-          <TierElement @contextmenu.prevent="openContextMenu($event, element)" />
+          <TierElement :element="element" @contextmenu.prevent="openContextMenu($event, element)" />
         </template>
 
         <template #footer>
           <div
             class="marker flex h-16 w-16 cursor-pointer items-center justify-center rounded border-2 border-gray-600 transition-transform hover:scale-105"
-            @click="elementDialog?.open"
+            @click="elementDialog?.open()"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -181,7 +210,7 @@ function contextMenuItemSelected(name: string, tierElement: TierElementData) {
 
     <!-- Dialogs -->
     <div>
-      <ElementDialog ref="elementDialog" />
+      <ElementDialog ref="elementDialog" @close="elementDialogClosed" />
       <ContextMenu
         ref="contextMenu"
         :items="contextMenuItems"

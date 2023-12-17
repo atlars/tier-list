@@ -9,7 +9,7 @@ let name = ref(props.name)
 </script>
 
 <template>
-  <div class="flex h-full min-h-[4.5rem] flex-row bg-slate-700">
+  <div class="flex h-full min-h-[5rem] flex-row bg-slate-700">
     <!-- Drag -->
     <!-- Handle class indicates the draggable library the area to drag on-->
     <div class="handle flex w-10 items-center justify-center">

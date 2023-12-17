@@ -1,14 +1,13 @@
 <script lang="ts" setup>
+import type { TierElementData } from '@/views/TierList.vue';
 
-interface Props {
-  color?: string
-}
-withDefaults(defineProps<Props>(), {
-  color: '#FF0000'
-})
+const props = defineProps<{
+  element: TierElementData
+}>()
 </script>
 
 <template>
-  <div class="h-18 w-18 bg-red-400">
+  <div class="h-20 w-20 flex items-center justify-center hover:cursor-default p-2" :style="{ backgroundColor: element.color}">
+    <span class="break-all">{{ element.name }}</span>
   </div>
 </template>
