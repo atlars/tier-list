@@ -85,16 +85,18 @@ const contextMenuItems: ContextMenuItem[] = [
   }
 ]
 
-function openContextMenu(event: MouseEvent, itemId: string) {
-  contextMenu.value?.open(event, itemId)
+function openContextMenu(event: MouseEvent, tierElement: TierElementData) {
+  contextMenu.value?.open(event, tierElement)
 }
 
-function contextMenuItemSelected(name: string, context: string) {
+function contextMenuItemSelected(name: string, tierElement: TierElementData) {
   if (name === 'Delete') {
-    availableElements.value = availableElements.value.filter((element) => element.id !== context)
+    availableElements.value = availableElements.value.filter((element) => element.id !== tierElement.id)
     items.value.forEach((item) => {
-      item.elements = item.elements.filter((element) => element.id !== context)
+      item.elements = item.elements.filter((element) => element.id !== tierElement.id)
     })
+  }else if(name === "Edit") {
+    elementDialog.value?.open(tierElement)
   }
 }
 </script>
@@ -127,7 +129,7 @@ function contextMenuItemSelected(name: string, context: string) {
             <draggable
               :list="element.elements"
               :group="{ name: 'tier-elements' }"
-              item-key="name"
+              item-key="id"
               animation="300"
               :component-data="{
                 name: 'tier-element',
@@ -136,7 +138,7 @@ function contextMenuItemSelected(name: string, context: string) {
               }"
             >
               <template #item>
-                <TierElement @contextmenu.prevent="openContextMenu($event, element.id)" />
+                <TierElement @contextmenu.prevent="openContextMenu($event, element)" />
               </template>
             </draggable>
           </template>
@@ -148,7 +150,7 @@ function contextMenuItemSelected(name: string, context: string) {
     <div class="mt-4 min-h-[6.5rem] border border-gray-300 bg-slate-200 p-4">
       <draggable
         :list="availableElements"
-        item-key="name"
+        item-key="id"
         :group="{ name: 'tier-elements' }"
         animation="300"
         :component-data="{
@@ -157,7 +159,7 @@ function contextMenuItemSelected(name: string, context: string) {
         }"
       >
         <template #item="{ element }">
-          <TierElement @contextmenu.prevent="openContextMenu($event, element.id)" />
+          <TierElement @contextmenu.prevent="openContextMenu($event, element)" />
         </template>
 
         <template #footer>

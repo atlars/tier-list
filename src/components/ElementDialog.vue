@@ -1,28 +1,35 @@
 <script lang="ts" setup>
 import type { TierElementData } from '@/views/TierList.vue'
-import { ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import { ref } from 'vue'
 
 const isVisible = ref(false)
 const modal = ref<HTMLElement | null>(null)
 
-const emit = defineEmits<{
-  onClose: [element: TierElementData]
-}>()
+const templateElement: TierElementData = { id: '', name: '', imageUrl: '', color: '#244ef5' }
 
-const tierElement = ref({id: "-1"})
+const tierElement = ref<TierElementData>(templateElement)
+const editElement = ref(false)
+
+function open(element?: TierElementData) {
+  editElement.value = element !== undefined
+  tierElement.value = {
+    ...templateElement,
+    ...element
+  }
+  isVisible.value = true
+}
 
 function close() {
   isVisible.value = false
   emit('onClose', tierElement.value)
 }
 
-function open(element?: TierElementData) {
-  isVisible.value = true
-  if(element) tierElement.value = element
-}
-
 onClickOutside(modal, close)
+
+const emit = defineEmits<{
+  onClose: [element: TierElementData]
+}>()
 
 defineExpose({
   open,
@@ -34,7 +41,7 @@ defineExpose({
   <Teleport to="#app">
     <div
       v-if="isVisible"
-      class="bg-black bg-opacity-40 fixed z-50 p-4 pt-8 flex h-full max-h-full w-full justify-center overflow-y-auto overflow-x-hidden inset-0"
+      class="fixed inset-0 z-50 flex h-full max-h-full w-full justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-40 p-4 pt-8"
     >
       <div class="relative max-h-full w-full max-w-lg">
         <!-- Modal content -->
@@ -43,7 +50,7 @@ defineExpose({
           <div
             class="flex items-center justify-between rounded-t border-b p-4 dark:border-gray-600 md:p-5"
           >
-            <h3 class="text-xl font-medium text-gray-900 dark:text-white">Create element</h3>
+            <h3 class="text-xl font-medium text-gray-900 dark:text-white">{{ editElement ? "Edit" : "Create"}}</h3>
             <button
               type="button"
               class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -64,22 +71,54 @@ defineExpose({
                   d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
                 />
               </svg>
-              <span class="sr-only">Close modal</span>
             </button>
           </div>
           <!-- Modal body -->
           <div class="space-y-4 p-4 md:p-5">
-            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              With less than a month to go before the European Union enacts new consumer privacy
-              laws for its citizens, companies around the world are updating their terms of service
-              agreements to comply.
-            </p>
-            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on
-              May 25 and is meant to ensure a common set of data rights in the European Union. It
-              requires organizations to notify users as soon as possible of high-risk data breaches
-              that could personally affect them.
-            </p>
+            <div>
+              <label for="name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >Text</label
+              >
+              <input
+                type="text"
+                id="name"
+                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                v-model="tierElement.name"
+              />
+            </div>
+            <label class="block text-sm font-medium text-gray-900 dark:text-white"
+              >Background</label
+            >
+            <div class="flex items-center">
+              <div class="flex flex-1">
+                <span
+                  class="rounded-e-0 inline-flex items-center rounded-s-md border border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400"
+                >
+                  <svg
+                    class="h-6 w-6 fill-gray-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 -960 960 960"
+                  >
+                    <path
+                      d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z"
+                    />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  class="block w-full min-w-0 flex-1 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                  placeholder="https://placehold.co/600x400.png"
+                  v-model="tierElement.imageUrl"
+                />
+              </div>
+              <span class="px-4">or</span>
+              <input
+                id="style1"
+                class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
+                type="color"
+                v-model="tierElement.color"
+              />
+            </div>
           </div>
           <!-- Modal footer -->
           <div
@@ -89,15 +128,9 @@ defineExpose({
               data-modal-hide="medium-modal"
               type="button"
               class="rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              @click="close"
             >
-              I accept
-            </button>
-            <button
-              data-modal-hide="medium-modal"
-              type="button"
-              class="ms-3 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
-            >
-              Decline
+              Confirm
             </button>
           </div>
         </div>
@@ -105,3 +138,15 @@ defineExpose({
     </div>
   </Teleport>
 </template>
+
+<style scoped>
+input[type='color']::-moz-color-swatch {
+  border-radius: 8px;
+  border-style: none;
+}
+
+input[type='color']::-webkit-color-swatch {
+  border-radius: 8px;
+  border-style: none;
+}
+</style>
