@@ -158,7 +158,7 @@ function elementDialogSubmitted(element: TierElementData, createElement: boolean
         animation="300"
         :component-data="{
           name: 'available-element',
-          class: 'flex flex-row flex-wrap items-center w-full gap-3'
+          class: 'flex flex-row flex-wrap items-center w-full h-full gap-3'
         }"
         @start="closeContextMenu"
       >

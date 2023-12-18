@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TierElementData } from '@/views/TierList.vue';
+import type { TierElementData } from '@/views/TierList.vue'
 
 const props = defineProps<{
   element: TierElementData
@@ -7,7 +7,15 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="h-20 w-20 flex items-center justify-center hover:cursor-default p-2" :style="{ backgroundColor: element.color}">
-    <span class="break-all">{{ element.name }}</span>
+  <div
+    class="relative max-h-[8rem] min-h-[5rem] min-w-[5rem] max-w-[8rem] hover:cursor-default"
+    :style="[{ backgroundColor: element.color }]"
+  >
+    <div :class="[element.imageUrl ? 'absolute z-50 left-1/2 -translate-x-1/2 w-full text-center': '',  'text-white break-all p-2']">{{ element.name }}</div>
+    <img
+      v-if="element.imageUrl"
+      class="object-cover object-top max-h-[8rem] min-h-[5rem] min-w-[5rem]"
+      :src="element.imageUrl"
+    />
   </div>
 </template>
