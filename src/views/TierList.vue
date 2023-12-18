@@ -81,7 +81,7 @@ function contextMenuItemSelected(name: string, tierElement: TierElementData) {
   }
 }
 
-function elementDialogClosed(element: TierElementData, createElement: boolean) {
+function elementDialogSubmitted(element: TierElementData, createElement: boolean) {
   if (createElement) {
     availableElements.value.push(element)
     return
@@ -185,7 +185,7 @@ function elementDialogClosed(element: TierElementData, createElement: boolean) {
 
     <!-- Dialogs -->
     <div>
-      <ElementDialog ref="elementDialog" @close="elementDialogClosed" />
+      <ElementDialog ref="elementDialog" @submit="elementDialogSubmitted" />
       <ContextMenu
         ref="contextMenu"
         :items="contextMenuItems"

@@ -22,15 +22,19 @@ function open(element?: TierElementData) {
   isVisible.value = true
 }
 
+function submit() {
+  isVisible.value = false
+  emit('submit', tierElement.value, !editElement.value)
+}
+
 function close() {
   isVisible.value = false
-  emit('close', tierElement.value, !editElement.value)
 }
 
 onClickOutside(modal, close)
 
 const emit = defineEmits<{
-  close: [element: TierElementData, createElement: boolean]
+  submit: [element: TierElementData, createElement: boolean]
 }>()
 
 defineExpose({
@@ -130,7 +134,7 @@ defineExpose({
               data-modal-hide="medium-modal"
               type="button"
               class="rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              @click="close"
+              @click="submit"
             >
               Confirm
             </button>
