@@ -5,6 +5,9 @@ import TierElement from '../components/TierElement.vue'
 import ContextMenu, { type ContextMenuItem } from '../components/ContextMenu.vue'
 import { ref } from 'vue'
 import ElementDialog from '@/components/ElementDialog.vue'
+import DialogWrapper from '@/components/DialogWrapper.vue'
+import { openDialog } from '@/plugins/promise-dialog'
+import TestDialog from '@/components/TestDialog.vue'
 
 interface TierRowData {
   id: string
@@ -69,7 +72,7 @@ function closeContextMenu() {
   contextMenu.value?.close()
 }
 
-function contextMenuItemSelected(name: string, tierElement: TierElementData) {
+async function contextMenuItemSelected(name: string, tierElement: TierElementData) {
   if (name === 'Delete') {
     availableElements.value = availableElements.value.filter(
       (element) => element.id !== tierElement.id
@@ -78,7 +81,9 @@ function contextMenuItemSelected(name: string, tierElement: TierElementData) {
       item.elements = item.elements.filter((element) => element.id !== tierElement.id)
     })
   } else if (name === 'Edit') {
-    elementDialog.value?.open(tierElement)
+    //elementDialog.value?.open(tierElement)
+    let result = await openDialog(TestDialog, { text: "Test"})
+    console.log(result)
   }
 }
 
@@ -193,6 +198,7 @@ function elementDialogSubmitted(element: TierElementData, createElement: boolean
         menu-id="context-menu"
         @itemSelected="contextMenuItemSelected"
       />
+      <DialogWrapper />
     </div>
   </div>
 </template>
