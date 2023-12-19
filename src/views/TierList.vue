@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import draggable from 'vuedraggable'
-import TierRow from '@/components/TierRow.vue'
-import TierElement from '../components/TierElement.vue'
-import ContextMenu, { type ContextMenuItem } from '../components/ContextMenu.vue'
-import { ref } from 'vue'
-import ElementDialog from '@/components/ElementDialog.vue'
 import DialogWrapper from '@/components/DialogWrapper.vue'
+import ElementDialog from '@/components/ElementDialog.vue'
+import TierRow from '@/components/TierRow.vue'
 import { openDialog } from '@/plugins/promise-dialog'
-import TestDialog from '@/components/TestDialog.vue'
+import { ref, toRaw, unref } from 'vue'
+import draggable from 'vuedraggable'
+import ContextMenu, { type ContextMenuItem } from '../components/ContextMenu.vue'
+import TierElement from '../components/TierElement.vue'
 
 interface TierRowData {
   id: string
@@ -51,7 +50,6 @@ const availableElements = ref<TierElementData[]>([])
 const drag = ref(false)
 
 const contextMenu = ref<InstanceType<typeof ContextMenu> | null>(null)
-const elementDialog = ref<InstanceType<typeof ElementDialog> | null>(null)
 
 const contextMenuItems: ContextMenuItem[] = [
   {
@@ -65,7 +63,7 @@ const contextMenuItems: ContextMenuItem[] = [
 ]
 
 function openContextMenu(event: MouseEvent, tierElement: TierElementData) {
-  contextMenu.value?.open(event, tierElement)
+  contextMenu.value?.open(event, {... tierElement})
 }
 
 function closeContextMenu() {
@@ -81,27 +79,35 @@ async function contextMenuItemSelected(name: string, tierElement: TierElementDat
       item.elements = item.elements.filter((element) => element.id !== tierElement.id)
     })
   } else if (name === 'Edit') {
-    //elementDialog.value?.open(tierElement)
-    let result = await openDialog(TestDialog, { text: "Test"})
-    console.log(result)
+    editTierElement(tierElement)
   }
 }
 
-function elementDialogSubmitted(element: TierElementData, createElement: boolean) {
-  if (createElement) {
-    availableElements.value.push(element)
-    return
+async function addTierElement() {
+  let result = (await openDialog(ElementDialog, { createElement: true })) as TierElementData
+  if (result) {
+    availableElements.value.push(result)
   }
+}
 
+async function editTierElement(element: TierElementData) {
+  let result = (await openDialog(ElementDialog, {
+    createElement: false,
+    tierElement: element
+  })) as TierElementData
+  if (result) updateElement(result)
+}
+
+function updateElement(element: TierElementData) {
   // Find and update edited element
   let index = availableElements.value.findIndex((e) => e.id === element.id)
   if (index <= -1) {
     tierRows.value.forEach((row) => {
       index = row.elements.findIndex((e) => e.id === element.id)
-      if (index >= 0) row.elements[index] = element
+      if (index >= 0) row.elements.splice(index, 1, element)
     })
   } else {
-    availableElements.value[index] = element
+    availableElements.value.splice(index, 1, element)
   }
 }
 </script>
@@ -175,7 +181,7 @@ function elementDialogSubmitted(element: TierElementData, createElement: boolean
         <template #footer>
           <div
             class="marker flex h-18 w-18 cursor-pointer items-center justify-center rounded border-2 border-gray-600 transition-transform hover:scale-105"
-            @click="elementDialog?.open()"
+            @click="addTierElement"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +197,6 @@ function elementDialogSubmitted(element: TierElementData, createElement: boolean
 
     <!-- Dialogs -->
     <div>
-      <ElementDialog ref="elementDialog" @submit="elementDialogSubmitted" />
       <ContextMenu
         ref="contextMenu"
         :items="contextMenuItems"

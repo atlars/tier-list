@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, toRaw, unref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 
 export interface ContextMenuItem {
