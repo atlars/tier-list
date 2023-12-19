@@ -92,7 +92,7 @@ function elementDialogSubmitted(element: TierElementData, createElement: boolean
   if (index <= -1) {
     tierRows.value.forEach((row) => {
       index = row.elements.findIndex((e) => e.id === element.id)
-      if (index <= 0) row.elements[index] = element
+      if (index >= 0) row.elements[index] = element
     })
   } else {
     availableElements.value[index] = element
