@@ -14,8 +14,9 @@ interface TierRowData {
 
 export interface TierElementData {
   id: string
-  name: string
-  color: string
+  text?: string
+  textColor?: string
+  backgroundColor?: string
   imageUrl?: string
 }
 
