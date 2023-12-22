@@ -5,7 +5,10 @@ import TierRow from '@/components/TierRow.vue'
 import { closeDialog, openDialog } from '@/plugins/promise-dialog'
 import { ref } from 'vue'
 import draggable from 'vuedraggable'
-import ContextMenu, { type ContextMenuItem, type ContextMenuResult } from '../components/ContextMenu.vue'
+import ContextMenu, {
+  type ContextMenuItem,
+  type ContextMenuResult
+} from '../components/ContextMenu.vue'
 import TierElement from '../components/TierElement.vue'
 
 interface TierRowData {
@@ -60,28 +63,46 @@ const contextMenuItems: ContextMenuItem[] = [
   }
 ]
 
-async function openContextMenu(event: MouseEvent, tierElement: TierElementData) {
-  let result = (await openDialog(ContextMenu, {items: contextMenuItems, event: event, context: tierElement})) as ContextMenuResult
-  if(result.itemName !== undefined && result.context !== undefined) {
-    contextMenuItemSelected(result.itemName, result.context)
+async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
+  let result = (await openDialog(ContextMenu, {
+    items: contextMenuItems,
+    event: event,
+    context: tierElement
+  })) as ContextMenuResult
+  if (result.itemName !== undefined && result.context !== undefined) {
+    rowContextMenuItemSelected(result.itemName, result.context)
   }
 }
 
-function closeContextMenu() {
-  closeDialog()
+async function openElementContextMenu(event: MouseEvent, tierElement: TierElementData) {
+  let result = (await openDialog(ContextMenu, {
+    items: contextMenuItems,
+    event: event,
+    context: tierElement
+  })) as ContextMenuResult
+  if (result.itemName !== undefined && result.context !== undefined) {
+    elementContextMenuItemSelected(result.itemName, result.context)
+  }
 }
 
-function contextMenuItemSelected(name: string, tierElement: TierElementData) {
+function elementContextMenuItemSelected(name: string, element: TierElementData) {
   if (name === 'Delete') {
-    availableElements.value = availableElements.value.filter(
-      (element) => element.id !== tierElement.id
-    )
-    tierRows.value.forEach((item) => {
-      item.elements = item.elements.filter((element) => element.id !== tierElement.id)
-    })
+    deleteTierElement(element)
   } else if (name === 'Edit') {
-    editTierElement(tierElement)
+    editTierElement(element)
   }
+}
+
+function rowContextMenuItemSelected(name: string, row: TierRowData) {
+  if (name === 'Delete') {
+    deleteTierRow(row)
+  } else if (name === 'Edit') {
+    editTierRow(row)
+  }
+}
+
+function closeActiveDialog() {
+  closeDialog()
 }
 
 async function addTierElement() {
@@ -91,12 +112,28 @@ async function addTierElement() {
   }
 }
 
+function deleteTierElement(element: TierElementData) {
+  availableElements.value = availableElements.value.filter((e) => e.id !== element.id)
+  tierRows.value.forEach((item) => {
+    item.elements = item.elements.filter((e) => e.id !== element.id)
+  })
+}
+
+function deleteTierRow(row: TierRowData) {
+  let index = tierRows.value.findIndex((e) => e.id === row.id)
+  if (index >= 0) tierRows.value.splice(index, 1, row)
+}
+
 async function editTierElement(element: TierElementData) {
   let result = (await openDialog(ElementDialog, {
     createElement: false,
     tierElement: element
   })) as TierElementData
   if (result) updateElement(result)
+}
+
+async function editTierRow(row: TierRowData) {
+  // TODO: Add dialog for the tier row
 }
 
 function updateElement(element: TierElementData) {
@@ -136,7 +173,7 @@ function updateElement(element: TierElementData) {
     >
       <!--Tier elements of rows -->
       <template #item="{ element }">
-        <TierRow :name="element.name">
+        <TierRow :name="element.name" @contextmenu.prevent="openRowContextMenu($event, element)">
           <template #elements>
             <draggable
               :list="element.elements"
@@ -148,12 +185,12 @@ function updateElement(element: TierElementData) {
                 type: 'transition-group',
                 class: 'flex flex-row w-full gap-1 flex-wrap items-start mx-1'
               }"
-              @start="closeContextMenu"
+              @start="closeActiveDialog"
             >
               <template #item="{ element }">
                 <TierElement
                   :element="element"
-                  @contextmenu.prevent="openContextMenu($event, element)"
+                  @contextmenu.prevent="openElementContextMenu($event, element)"
                 />
               </template>
             </draggable>
@@ -173,10 +210,13 @@ function updateElement(element: TierElementData) {
           name: 'available-element',
           class: 'flex flex-row flex-wrap items-center w-full h-full gap-3'
         }"
-        @start="closeContextMenu"
+        @start="closeActiveDialog"
       >
         <template #item="{ element }">
-          <TierElement :element="element" @contextmenu.prevent="openContextMenu($event, element)" />
+          <TierElement
+            :element="element"
+            @contextmenu.prevent="openElementContextMenu($event, element)"
+          />
         </template>
 
         <template #footer>

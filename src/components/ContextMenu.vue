@@ -15,8 +15,8 @@ export interface ContextMenuResult {
 
 const props = defineProps<{
   items: ContextMenuItem[]
-  context?: any
   event: MouseEvent
+  context?: any
 }>()
 
 const top = ref(0)
