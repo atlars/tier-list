@@ -1,29 +1,50 @@
 <script lang="ts" setup>
-import { onClickOutside } from '@vueuse/core';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { closeDialog } from '@/plugins/promise-dialog'
+import { onClickOutside } from '@vueuse/core'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 export interface ContextMenuItem {
   name: string
   icon?: 'edit' | 'delete'
 }
 
+export interface ContextMenuResult {
+  itemName?: string
+  context?: any
+}
+
 const props = defineProps<{
   items: ContextMenuItem[]
+  context?: any
+  event: MouseEvent
 }>()
 
-const emit = defineEmits<{
-  itemSelected: [name: string, context: any]
-}>()
-
-const isVisible = ref(false)
-// Unique identifier for the active context menu
-const context = ref<any>(null)
 const top = ref(0)
 const left = ref(0)
 const menu = ref<HTMLElement | null>(null)
 
 onMounted(() => {
   document.addEventListener('keyup', onEscKeyRelease)
+
+  if (menu.value === null) return
+
+  if (top.value <= 0 || left.value <= 0) {
+    menu.value.style.visibility = 'hidden'
+    menu.value.style.display = 'block'
+    menu.value.removeAttribute('style')
+  }
+
+  if (menu.value.offsetWidth + props.event.pageX >= window.innerWidth) {
+    left.value = props.event.pageX - menu.value.offsetWidth + 2
+  } else {
+    left.value = props.event.pageX - 2
+  }
+
+  if (menu.value.offsetHeight + props.event.pageY >= window.innerHeight) {
+    top.value = props.event.pageY - menu.value.offsetHeight + 2
+  } else {
+    top.value = props.event.pageY - 2
+  }
 })
 
 onBeforeUnmount(() => {
@@ -34,47 +55,21 @@ function onEscKeyRelease(event: KeyboardEvent) {
   if (event.key === 'Escape') close()
 }
 
-function open(event: MouseEvent, menuContext: any) {
-  if (!menu.value) return
-
-  if (top.value <= 0 || left.value <= 0) {
-    menu.value.style.visibility = 'hidden'
-    menu.value.style.display = 'block'
-    menu.value.removeAttribute('style')
-  }
-
-  if (menu.value.offsetWidth + event.pageX >= window.innerWidth) {
-    left.value = event.pageX - menu.value.offsetWidth + 2
-  } else {
-    left.value = event.pageX - 2
-  }
-
-  if (menu.value.offsetHeight + event.pageY >= window.innerHeight) {
-    top.value = event.pageY - menu.value.offsetHeight + 2
-  } else {
-    top.value = event.pageY - 2
-  }
-
-  isVisible.value = true
-  context.value = menuContext
-}
-
 function close() {
-  isVisible.value = false
-  top.value = 0
-  left.value = 0
+  closeDialog({ itemName: undefined, context: props.context })
 }
 
 function menuItemClicked(name: string) {
-  emit('itemSelected', name, context.value)
-  close()
+  closeDialog({ itemName: name, context: props.context })
 }
 
 onClickOutside(menu, close)
 
 defineExpose({
-  open,
-  close
+  close,
+  returnValue: (): ContextMenuResult => {
+    return { itemName: undefined, context: props.context }
+  }
 })
 </script>
 
@@ -83,7 +78,6 @@ defineExpose({
     class="fixed z-50 cursor-default divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
     :style="{ top: top + 'px', left: left + 'px' }"
     ref="menu"
-    v-show="isVisible"
   >
     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
       <li v-for="(item, index) in props.items" :key="index">

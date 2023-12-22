@@ -2,10 +2,10 @@
 import DialogWrapper from '@/components/DialogWrapper.vue'
 import ElementDialog from '@/components/ElementDialog.vue'
 import TierRow from '@/components/TierRow.vue'
-import { openDialog } from '@/plugins/promise-dialog'
+import { closeDialog, openDialog } from '@/plugins/promise-dialog'
 import { ref } from 'vue'
 import draggable from 'vuedraggable'
-import ContextMenu, { type ContextMenuItem } from '../components/ContextMenu.vue'
+import ContextMenu, { type ContextMenuItem, type ContextMenuResult } from '../components/ContextMenu.vue'
 import TierElement from '../components/TierElement.vue'
 
 interface TierRowData {
@@ -49,8 +49,6 @@ const availableElements = ref<TierElementData[]>([])
 
 const drag = ref(false)
 
-const contextMenu = ref<InstanceType<typeof ContextMenu> | null>(null)
-
 const contextMenuItems: ContextMenuItem[] = [
   {
     name: 'Edit',
@@ -62,15 +60,18 @@ const contextMenuItems: ContextMenuItem[] = [
   }
 ]
 
-function openContextMenu(event: MouseEvent, tierElement: TierElementData) {
-  contextMenu.value?.open(event, {... tierElement})
+async function openContextMenu(event: MouseEvent, tierElement: TierElementData) {
+  let result = (await openDialog(ContextMenu, {items: contextMenuItems, event: event, context: tierElement})) as ContextMenuResult
+  if(result.itemName !== undefined && result.context !== undefined) {
+    contextMenuItemSelected(result.itemName, result.context)
+  }
 }
 
 function closeContextMenu() {
-  contextMenu.value?.close()
+  closeDialog()
 }
 
-async function contextMenuItemSelected(name: string, tierElement: TierElementData) {
+function contextMenuItemSelected(name: string, tierElement: TierElementData) {
   if (name === 'Delete') {
     availableElements.value = availableElements.value.filter(
       (element) => element.id !== tierElement.id
@@ -197,11 +198,6 @@ function updateElement(element: TierElementData) {
 
     <!-- Dialogs -->
     <div>
-      <ContextMenu
-        ref="contextMenu"
-        :items="contextMenuItems"
-        @itemSelected="contextMenuItemSelected"
-      />
       <DialogWrapper />
     </div>
   </div>
