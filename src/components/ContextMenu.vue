@@ -1,18 +1,15 @@
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref, toRaw, unref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
+import { onClickOutside } from '@vueuse/core';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 export interface ContextMenuItem {
   name: string
   icon?: 'edit' | 'delete'
 }
 
-interface ContextMenuProps {
-  menuId: string
+const props = defineProps<{
   items: ContextMenuItem[]
-}
-
-const props = defineProps<ContextMenuProps>()
+}>()
 
 const emit = defineEmits<{
   itemSelected: [name: string, context: any]

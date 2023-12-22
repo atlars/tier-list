@@ -3,7 +3,7 @@ import DialogWrapper from '@/components/DialogWrapper.vue'
 import ElementDialog from '@/components/ElementDialog.vue'
 import TierRow from '@/components/TierRow.vue'
 import { openDialog } from '@/plugins/promise-dialog'
-import { ref, toRaw, unref } from 'vue'
+import { ref } from 'vue'
 import draggable from 'vuedraggable'
 import ContextMenu, { type ContextMenuItem } from '../components/ContextMenu.vue'
 import TierElement from '../components/TierElement.vue'
@@ -200,7 +200,6 @@ function updateElement(element: TierElementData) {
       <ContextMenu
         ref="contextMenu"
         :items="contextMenuItems"
-        menu-id="context-menu"
         @itemSelected="contextMenuItemSelected"
       />
       <DialogWrapper />
