@@ -148,6 +148,11 @@ function updateElement(element: TierElementData) {
     availableElements.value.splice(index, 1, element)
   }
 }
+
+function onRowDragStart() {
+  drag.value = true
+  closeActiveDialog()
+}
 </script>
 
 <template>
@@ -168,7 +173,7 @@ function updateElement(element: TierElementData) {
           ? 'flex flex-col cursor-move gap-1 bg-slate-800'
           : 'flex flex-col gap-1 bg-slate-800'
       }"
-      @start="drag = true"
+      @start="onRowDragStart"
       @end="drag = false"
     >
       <!--Tier elements of rows -->
