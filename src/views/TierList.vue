@@ -10,10 +10,12 @@ import ContextMenu, {
   type ContextMenuResult
 } from '../components/ContextMenu.vue'
 import TierElement from '../components/TierElement.vue'
+import RowDialog from '@/components/RowDialog.vue'
 
-interface TierRowData {
+export interface TierRowData {
   id: string
-  name: string
+  text: string
+  textColor?: string
   elements: TierElementData[]
 }
 
@@ -28,22 +30,22 @@ export interface TierElementData {
 const tierRows = ref<TierRowData[]>([
   {
     id: '0',
-    name: 'Test 1',
+    text: 'Test 1',
     elements: []
   },
   {
     id: '1',
-    name: 'Test 2',
+    text: 'Test 2',
     elements: []
   },
   {
     id: '2',
-    name: 'Test 2',
+    text: 'Test 2',
     elements: []
   },
   {
     id: '3',
-    name: 'Test 2',
+    text: 'Test 2',
     elements: []
   }
 ])
@@ -69,8 +71,13 @@ async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
     event: event,
     context: tierElement
   })) as ContextMenuResult
-  if (result.itemName !== undefined && result.context !== undefined) {
-    rowContextMenuItemSelected(result.itemName, result.context)
+
+  if (result.itemName && result.context) {
+    if (result.itemName === 'Delete') {
+      deleteRow(result.context)
+    } else if (result.itemName === 'Edit') {
+      editRow(result.context)
+    }
   }
 }
 
@@ -80,64 +87,56 @@ async function openElementContextMenu(event: MouseEvent, tierElement: TierElemen
     event: event,
     context: tierElement
   })) as ContextMenuResult
-  if (result.itemName !== undefined && result.context !== undefined) {
-    elementContextMenuItemSelected(result.itemName, result.context)
-  }
-}
 
-function elementContextMenuItemSelected(name: string, element: TierElementData) {
-  if (name === 'Delete') {
-    deleteTierElement(element)
-  } else if (name === 'Edit') {
-    editTierElement(element)
+  if (result.itemName && result.context) {
+    if (result.itemName === 'Delete') {
+      deleteElement(result.context)
+    } else if (result.itemName === 'Edit') {
+      editElement(result.context)
+    }
   }
-}
-
-function rowContextMenuItemSelected(name: string, row: TierRowData) {
-  if (name === 'Delete') {
-    deleteTierRow(row)
-  } else if (name === 'Edit') {
-    editTierRow(row)
-  }
-}
-
-function closeActiveDialog() {
-  closeDialog()
 }
 
 async function addTierElement() {
-  let result = (await openDialog(ElementDialog, { createElement: true })) as TierElementData
-  if (result) {
-    availableElements.value.push(result)
-  }
+  let result = (await openDialog(ElementDialog)) as TierElementData
+  if (result) availableElements.value.push(result)
 }
 
-function deleteTierElement(element: TierElementData) {
+function deleteElement(element: TierElementData) {
   availableElements.value = availableElements.value.filter((e) => e.id !== element.id)
   tierRows.value.forEach((item) => {
     item.elements = item.elements.filter((e) => e.id !== element.id)
   })
 }
 
-function deleteTierRow(row: TierRowData) {
-  let index = tierRows.value.findIndex((e) => e.id === row.id)
-  if (index >= 0) tierRows.value.splice(index, 1, row)
+function deleteRow(row: TierRowData) {
+  let index = tierRows.value.findIndex((r) => r.id === row.id)
+  if (index >= 0) tierRows.value.splice(index, 1)
 }
 
-async function editTierElement(element: TierElementData) {
+async function editElement(element: TierElementData) {
   let result = (await openDialog(ElementDialog, {
-    createElement: false,
     tierElement: element
   })) as TierElementData
   if (result) updateElement(result)
 }
 
-async function editTierRow(row: TierRowData) {
-  // TODO: Add dialog for the tier row
+async function createRow() {
+  let result = (await openDialog(RowDialog)) as TierRowData
+  if (result) tierRows.value.push(result)
+}
+
+async function editRow(row: TierRowData) {
+  let result = (await openDialog(RowDialog, { rowData: row })) as TierRowData
+  if (result) updateRow(result)
+}
+
+function updateRow(row: TierRowData) {
+  let index = tierRows.value.findIndex((r) => r.id === row.id)
+  tierRows.value.splice(index, 1, row)
 }
 
 function updateElement(element: TierElementData) {
-  // Find and update edited element
   let index = availableElements.value.findIndex((e) => e.id === element.id)
   if (index <= -1) {
     tierRows.value.forEach((row) => {
@@ -149,6 +148,10 @@ function updateElement(element: TierElementData) {
   }
 }
 
+function closeActiveDialog() {
+  closeDialog()
+}
+
 function onRowDragStart() {
   drag.value = true
   closeActiveDialog()
@@ -157,6 +160,21 @@ function onRowDragStart() {
 
 <template>
   <div>
+    <button
+      type="button"
+      class="me-2 inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      @click="createRow"
+    >
+      <svg
+        class="me-1 h-5 w-5 fill-white"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 -960 960 960"
+      >
+        <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+      </svg>
+      Row
+    </button>
+    <div class="my-2"></div>
     <!--- Tier rows -->
     <draggable
       class="bg-blue-500"
@@ -178,7 +196,7 @@ function onRowDragStart() {
     >
       <!--Tier elements of rows -->
       <template #item="{ element }">
-        <TierRow :name="element.name" @contextmenu.prevent="openRowContextMenu($event, element)">
+        <TierRow :row="element" @contextmenu.prevent="openRowContextMenu($event, element)">
           <template #elements>
             <draggable
               :list="element.elements"

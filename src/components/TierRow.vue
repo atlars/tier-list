@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import type { TierRowData } from '@/views/TierList.vue'
 
 let props = defineProps<{
-  name: string
+  row: TierRowData
 }>()
-
-let name = ref(props.name)
 </script>
 
 <template>
@@ -21,7 +19,9 @@ let name = ref(props.name)
     </div>
     <!-- Name -->
     <div class="flex w-24 items-center justify-center break-all bg-blue-500 p-4">
-      <p contenteditable="plaintext-only" class="outline-none text-white font-bold">{{ name }}</p>
+      <p contenteditable="plaintext-only" class="font-bold text-white outline-none" :style="{ color: props.row.textColor ?? 'black'}">
+        {{ props.row.text }}
+      </p>
     </div>
     <!-- Tier elements -->
     <slot name="elements"></slot>

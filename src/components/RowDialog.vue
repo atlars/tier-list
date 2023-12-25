@@ -1,39 +1,40 @@
 <script lang="ts" setup>
-import type { TierElementData } from '@/views/TierList.vue'
-import { onClickOutside } from '@vueuse/core'
-import { ref, toRaw } from 'vue'
-import { v4 as uuid } from 'uuid'
 import { closeDialog } from '@/plugins/promise-dialog'
-
-const modal = ref<HTMLElement | null>(null)
+import type { TierRowData } from '@/views/TierList.vue'
+import { onClickOutside } from '@vueuse/core';
+import { v4 as uuid } from 'uuid'
+import { ref, toRaw } from 'vue'
 
 interface Props {
-  tierElement?: TierElementData
+  rowData?: TierRowData
 }
 
 let props = defineProps<Props>()
 
-const defaultElement: TierElementData = {
+const defaultRowData: TierRowData = {
   id: uuid(),
-  backgroundColor: '#5c7cff',
-  textColor: '#000000'
+  text: '',
+  textColor: '#000000',
+  elements: []
 }
 
-const tierElement = props.tierElement ? { ...toRaw(props.tierElement) } : defaultElement
-const createElement: boolean = props.tierElement === undefined
+const row = props.rowData ? { ...toRaw(props.rowData) } : defaultRowData
+const createElement: boolean = props.rowData === undefined
 
-onClickOutside(modal, cancel)
+const modal = ref<HTMLElement | null>(null)
 
 function submit() {
-  closeDialog(tierElement)
+  closeDialog(row)
 }
 
 function cancel() {
-  closeDialog()
+  closeDialog(undefined)
 }
 
+onClickOutside(modal, cancel)
+
 defineExpose({
-  returnValue: (): TierElementData | undefined => {
+  returnValue: (): TierRowData | undefined => {
     return undefined
   }
 })
@@ -88,51 +89,15 @@ defineExpose({
                 id="name"
                 class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 maxlength="40"
-                v-model="tierElement.text"
+                v-model="row.text"
               />
             </div>
 
             <input
               class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
               type="color"
-              v-model="tierElement.textColor"
+              v-model="row.textColor"
             />
-          </div>
-
-          <!--Background-->
-          <div>
-            <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Background</label
-            >
-            <div class="flex items-center">
-              <div class="flex flex-1">
-                <span
-                  class="rounded-e-0 inline-flex items-center rounded-s-md border border-gray-300 bg-gray-200 px-3 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-600 dark:text-gray-400"
-                >
-                  <svg
-                    class="h-6 w-6 fill-gray-600 dark:fill-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 -960 960 960"
-                  >
-                    <path
-                      d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z"
-                    />
-                  </svg>
-                </span>
-                <input
-                  type="text"
-                  class="block w-full min-w-0 flex-1 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                  placeholder="https://placehold.co/600x400.png"
-                  v-model="tierElement.imageUrl"
-                />
-              </div>
-              <span class="px-4 dark:text-white">or</span>
-              <input
-                class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
-                type="color"
-                v-model="tierElement.backgroundColor"
-              />
-            </div>
           </div>
         </div>
         <!-- Modal footer -->
