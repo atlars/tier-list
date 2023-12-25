@@ -46,6 +46,8 @@ const contextMenuItems: ContextMenuItem[] = [
 ]
 
 async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
+  event.preventDefault();
+  
   let result = (await openDialog(ContextMenu, {
     items: contextMenuItems,
     event: event,
@@ -62,6 +64,9 @@ async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
 }
 
 async function openElementContextMenu(event: MouseEvent, tierElement: TierElementData) {
+  event.preventDefault();
+  event.stopPropagation();
+
   let result = (await openDialog(ContextMenu, {
     items: contextMenuItems,
     event: event,
@@ -176,7 +181,7 @@ function onRowDragStart() {
     >
       <!--Tier elements of rows -->
       <template #item="{ element }">
-        <TierRow :row="element" @contextmenu.prevent="openRowContextMenu($event, element)">
+        <TierRow :row="element" @contextmenu="openRowContextMenu($event, element)">
           <template #elements>
             <draggable
               :list="element.elements"
@@ -193,7 +198,7 @@ function onRowDragStart() {
               <template #item="{ element }">
                 <TierElement
                   :element="element"
-                  @contextmenu.prevent="openElementContextMenu($event, element)"
+                  @contextmenu="openElementContextMenu($event, element)"
                 />
               </template>
             </draggable>
@@ -218,7 +223,7 @@ function onRowDragStart() {
         <template #item="{ element }">
           <TierElement
             :element="element"
-            @contextmenu.prevent="openElementContextMenu($event, element)"
+            @contextmenu="openElementContextMenu($event, element)"
           />
         </template>
 
