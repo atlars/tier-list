@@ -18,7 +18,7 @@ let props = defineProps<{
       </svg>
     </div>
     <!-- Name -->
-    <div class="flex w-24 items-center justify-center break-all bg-blue-500 p-4">
+    <div class="flex w-24 items-center justify-center break-all p-4" :style="{ backgroundColor: props.row.backgroundColor ?? '#2563eb'}">
       <p contenteditable="plaintext-only" class="font-bold text-white outline-none" :style="{ color: props.row.textColor ?? 'black'}">
         {{ props.row.text }}
       </p>

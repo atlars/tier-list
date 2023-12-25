@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { TierElementData } from '@/views/TierList.vue'
 
-const props = defineProps<{
+defineProps<{
   element: TierElementData
 }>()
 </script>

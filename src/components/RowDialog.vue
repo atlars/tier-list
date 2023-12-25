@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { closeDialog } from '@/plugins/promise-dialog'
 import type { TierRowData } from '@/views/TierList.vue'
-import { onClickOutside } from '@vueuse/core';
+import { onClickOutside } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import { ref, toRaw } from 'vue'
 
@@ -15,6 +15,7 @@ const defaultRowData: TierRowData = {
   id: uuid(),
   text: '',
   textColor: '#000000',
+  backgroundColor: '#2563eb',
   elements: []
 }
 
@@ -97,6 +98,17 @@ defineExpose({
               class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
               type="color"
               v-model="row.textColor"
+            />
+          </div>
+          <!--Background-->
+          <div>
+            <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Background</label
+            >
+            <input
+              class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
+              type="color"
+              v-model="row.backgroundColor"
             />
           </div>
         </div>
