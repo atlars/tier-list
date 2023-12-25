@@ -28,32 +28,7 @@ export interface TierElementData {
   imageUrl?: string
 }
 
-const tierRows = ref<TierRowData[]>([
-  {
-    id: '0',
-    text: 'Test 1',
-    backgroundColor: '#2563eb',
-    elements: []
-  },
-  {
-    id: '1',
-    text: 'Test 2',
-    backgroundColor: '#2563eb',
-    elements: []
-  },
-  {
-    id: '2',
-    text: 'Test 2',
-    backgroundColor: '#2563eb',
-    elements: []
-  },
-  {
-    id: '3',
-    text: 'Test 2',
-    backgroundColor: '#2563eb',
-    elements: []
-  }
-])
+const tierRows = ref<TierRowData[]>([])
 
 const availableElements = ref<TierElementData[]>([])
 

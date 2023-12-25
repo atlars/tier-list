@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TierElementData } from '@/views/TierList.vue'
-import { onClickOutside } from '@vueuse/core'
+import { onClickOutside, onKeyUp } from '@vueuse/core'
 import { ref, toRaw } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { closeDialog } from '@/plugins/promise-dialog'
@@ -23,6 +23,7 @@ const tierElement = props.tierElement ? { ...toRaw(props.tierElement) } : defaul
 const createElement: boolean = props.tierElement === undefined
 
 onClickOutside(modal, cancel)
+onKeyUp("Escape", cancel)
 
 function submit() {
   closeDialog(tierElement)

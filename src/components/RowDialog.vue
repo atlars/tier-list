@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { closeDialog } from '@/plugins/promise-dialog'
 import type { TierRowData } from '@/views/TierList.vue'
-import { onClickOutside } from '@vueuse/core'
+import { onClickOutside, onKeyUp } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import { ref, toRaw } from 'vue'
 
@@ -15,7 +15,7 @@ const defaultRowData: TierRowData = {
   id: uuid(),
   text: '',
   textColor: '#000000',
-  backgroundColor: '#2563eb',
+  backgroundColor: '#E68281',
   elements: []
 }
 
@@ -33,6 +33,7 @@ function cancel() {
 }
 
 onClickOutside(modal, cancel)
+onKeyUp("Escape", cancel)
 
 defineExpose({
   returnValue: (): TierRowData | undefined => {
