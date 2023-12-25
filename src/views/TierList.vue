@@ -46,8 +46,8 @@ const contextMenuItems: ContextMenuItem[] = [
 ]
 
 async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
-  event.preventDefault();
-  
+  event.preventDefault()
+
   let result = (await openDialog(ContextMenu, {
     items: contextMenuItems,
     event: event,
@@ -64,8 +64,8 @@ async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
 }
 
 async function openElementContextMenu(event: MouseEvent, tierElement: TierElementData) {
-  event.preventDefault();
-  event.stopPropagation();
+  event.preventDefault()
+  event.stopPropagation()
 
   let result = (await openDialog(ContextMenu, {
     items: contextMenuItems,
@@ -221,20 +221,17 @@ function onRowDragStart() {
         @start="closeActiveDialog"
       >
         <template #item="{ element }">
-          <TierElement
-            :element="element"
-            @contextmenu="openElementContextMenu($event, element)"
-          />
+          <TierElement :element="element" @contextmenu="openElementContextMenu($event, element)" />
         </template>
 
         <template #footer>
           <div
-            class="marker flex h-18 w-18 cursor-pointer items-center justify-center rounded border-2 border-gray-600 transition-transform hover:scale-105"
+            class="group marker box-border flex h-20 w-20 cursor-pointer items-center justify-center rounded border-[1px] border-gray-700 transition-transform hover:border-[2px] hover:border-gray-800"
             @click="addTierElement"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-8 w-8 fill-gray-800"
+              class="h-7 w-7 fill-gray-700 group-hover:fill-gray-800"
               viewBox="0 -960 960 960"
             >
               <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
