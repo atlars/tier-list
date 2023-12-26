@@ -5,6 +5,6 @@
 @tailwind utilities;
 
 :root {
-    background-color: theme(colors.slate.100);
+    background-color: theme(colors.slate.50);
     font-size: 16px;
 }

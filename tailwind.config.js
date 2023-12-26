@@ -14,6 +14,9 @@ export default {
       },
       height: {
         '18': '4.5rem'
+      },
+      borderWidth: {
+        '1': '1px'
       }
     },
   },

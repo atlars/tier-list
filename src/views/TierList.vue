@@ -144,25 +144,48 @@ function onRowDragStart() {
 </script>
 
 <template>
-  <div>
-    <button
-      type="button"
-      class="me-2 inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-      @click="createRow"
-    >
-      <svg
-        class="me-1 h-5 w-5 fill-white"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 -960 960 960"
+  <div class="mt-4 bg-white p-4 shadow-sm">
+    <div class="my-4 inline-flex gap-2 py-2">
+      <button
+        type="button"
+        class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        @click="createRow"
       >
-        <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
-      </svg>
-      Row
-    </button>
+        <svg
+          class="me-1 h-5 w-5 fill-white"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 -960 960 960"
+        >
+          <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+        </svg>
+        Row
+      </button>
+
+      <button
+        type="button"
+        class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-5 w-5 fill-white">
+          <path
+            d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"
+          />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        <svg class="h-5 w-5 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+          <path
+            d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"
+          />
+        </svg>
+      </button>
+    </div>
     <div class="my-2"></div>
     <!--- Tier rows -->
     <draggable
-      class="bg-blue-500"
       :list="tierRows"
       item-key="id"
       :group="{ name: 'tier-rows' }"
@@ -173,8 +196,8 @@ function onRowDragStart() {
         name: !drag ? 'flip-list' : null,
         type: 'transition-group',
         class: drag
-          ? 'flex flex-col cursor-move gap-1 bg-slate-800'
-          : 'flex flex-col gap-1 bg-slate-800'
+          ? 'flex flex-col cursor-move gap-[0.2rem] bg-gray-800'
+          : 'flex flex-col gap-[0.2rem] bg-gray-800'
       }"
       @start="onRowDragStart"
       @end="drag = false"
@@ -208,7 +231,7 @@ function onRowDragStart() {
     </draggable>
 
     <!--- Available tier items -->
-    <div class="mt-4 min-h-[7.0rem] border border-gray-300 bg-slate-200 p-4">
+    <div class="mt-4 min-h-[7.0rem] border border-gray-200 bg-slate-50 p-4">
       <draggable
         :list="availableElements"
         item-key="id"
@@ -226,7 +249,7 @@ function onRowDragStart() {
 
         <template #footer>
           <div
-            class="group marker box-border flex h-20 w-20 cursor-pointer items-center justify-center rounded border-[1px] border-gray-700 transition-transform hover:border-[2px] hover:border-gray-800"
+            class="marker group box-border flex h-20 w-20 cursor-pointer items-center justify-center rounded border-[1px] border-gray-600 transition-transform hover:border-[2px] hover:border-gray-800"
             @click="addTierElement"
           >
             <svg

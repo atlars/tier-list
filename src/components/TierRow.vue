@@ -7,7 +7,7 @@ let props = defineProps<{
 </script>
 
 <template>
-  <div class="flex h-full min-h-[5rem] flex-row bg-slate-700">
+  <div class="flex h-full min-h-[5rem] flex-row bg-gray-600 border-slate-600">
     <!-- Drag -->
     <!-- Handle class indicates the draggable library the area to drag on-->
     <div class="handle flex w-10 items-center justify-center">
