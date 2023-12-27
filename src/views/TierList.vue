@@ -134,6 +134,13 @@ function updateElement(element: TierElementData) {
   }
 }
 
+function resetTierElements() {
+  tierRows.value.forEach(row => {
+    availableElements.value.push(...row.elements)
+    row.elements = []
+  })
+}
+
 function closeActiveDialog() {
   closeDialog()
 }
@@ -147,6 +154,7 @@ function onRowDragStart() {
 <template>
   <div class="mt-4 bg-white p-4 shadow-sm">
     <div class="my-4 inline-flex gap-2 py-2">
+      <!-- New row button -->
       <button
         type="button"
         class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -162,6 +170,7 @@ function onRowDragStart() {
         Row
       </button>
 
+      <!-- Download button -->
       <button
         type="button"
         class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -173,6 +182,7 @@ function onRowDragStart() {
         </svg>
       </button>
 
+      <!-- Export button -->
       <button
         type="button"
         class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -180,6 +190,19 @@ function onRowDragStart() {
         <svg class="h-5 w-5 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
           <path
             d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"
+          />
+        </svg>
+      </button>
+
+      <!-- Reset elements button -->
+      <button
+        type="button"
+        @click="resetTierElements"
+        class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="w-5 h-5 fill-white">
+          <path
+            d="M440-122q-121-15-200.5-105.5T160-440q0-66 26-126.5T260-672l57 57q-38 34-57.5 79T240-440q0 88 56 155.5T440-202v80Zm80 0v-80q87-16 143.5-83T720-440q0-100-70-170t-170-70h-3l44 44-56 56-140-140 140-140 56 56-44 44h3q134 0 227 93t93 227q0 121-79.5 211.5T520-122Z"
           />
         </svg>
       </button>
