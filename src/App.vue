@@ -3,7 +3,7 @@ import TierList from './views/TierList.vue'
 </script>
 
 <template>
-<div class="[&>*]:px-4 [&>*]:md:px-12 [&>*]:xl:px-52 min-h-screen flex flex-col">
+<div class="[&>*]:px-4 [&>*]:md:px-20 [&>*]:xl:px-40 [&>*]:2xl:px-60 min-h-screen flex flex-col">
   <nav class="flex items-center justify-between bg-white shadow-sm">
     <h1 class="my-6 text-4xl font-bold text-slate-800">
       <span class="bg-gradient-to-r from-sky-400 to-emerald-600 bg-clip-text text-transparent"
