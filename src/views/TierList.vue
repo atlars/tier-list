@@ -11,6 +11,8 @@ import ContextMenu, {
 } from '../components/ContextMenu.vue'
 import TierElement from '../components/TierElement.vue'
 import RowDialog from '@/components/RowDialog.vue'
+import { useStorage } from '@vueuse/core'
+import { LocalStorageKeys } from '@/constants'
 
 export interface TierRowData {
   id: string
@@ -28,9 +30,8 @@ export interface TierElementData {
   imageUrl?: string
 }
 
-const tierRows = ref<TierRowData[]>([])
-
-const availableElements = ref<TierElementData[]>([])
+const tierRows = useStorage<TierRowData[]>(LocalStorageKeys.TierRows, [])
+const availableElements = useStorage<TierElementData[]>(LocalStorageKeys.AvailableTierElements, [])
 
 const drag = ref(false)
 
