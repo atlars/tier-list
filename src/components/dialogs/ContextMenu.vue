@@ -114,3 +114,4 @@ defineExpose({
     </ul>
   </div>
 </template>
+@/plugins/promise-dialog/promise-dialog

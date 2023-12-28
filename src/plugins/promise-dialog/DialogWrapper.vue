@@ -1,3 +1,9 @@
+<!--
+  * File: DialogWrapper.vue
+ * Author: Régis Lemaigre
+ * Source: https://github.com/rlemaigre/vue3-promise-dialog/blob/main/lib/components/DialogWrapper.vue
+ * License: MIT
+-->
 <template>
   <transition v-bind="transitionAttrs">
     <component

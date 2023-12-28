@@ -18,10 +18,6 @@ export interface DialogInstance {
 
 export const dialogRef = shallowRef<DialogInstance>()
 
-export function isDialogOpen(): boolean {
-  return dialogRef.value !== undefined;
-}
-
 /**
  * Closes the currently opened dialog, resolving the promise with the return value of the dialog, or with the given
  * data if any.

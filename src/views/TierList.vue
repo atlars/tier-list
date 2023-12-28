@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import DialogWrapper from '@/components/DialogWrapper.vue'
-import ElementDialog from '@/components/ElementDialog.vue'
+import TierElement from '@/components/TierElement.vue'
 import TierRow from '@/components/TierRow.vue'
+import ContextMenu, {
+type ContextMenuItem,
+type ContextMenuResult
+} from '@/components/dialogs/ContextMenu.vue'
+import ElementDialog from '@/components/dialogs/ElementDialog.vue'
+import RowDialog from '@/components/dialogs/RowDialog.vue'
+import { LocalStorageKeys } from '@/constants'
 import { closeDialog, openDialog } from '@/plugins/promise-dialog'
+import DialogWrapper from '@/plugins/promise-dialog/DialogWrapper.vue'
+import { useStorage } from '@vueuse/core'
 import { ref } from 'vue'
 import draggable from 'vuedraggable'
-import ContextMenu, {
-  type ContextMenuItem,
-  type ContextMenuResult
-} from '../components/ContextMenu.vue'
-import TierElement from '../components/TierElement.vue'
-import RowDialog from '@/components/RowDialog.vue'
-import { useStorage } from '@vueuse/core'
-import { LocalStorageKeys } from '@/constants'
 
 export interface TierRowData {
   id: string
@@ -333,3 +333,4 @@ function onRowDragStart() {
   transition: transform 0.5s;
 }
 </style>
+@/plugins/promise-dialog/promise-dialog
