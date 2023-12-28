@@ -54,7 +54,7 @@ defineExpose({
           class="flex items-center justify-between rounded-t border-b p-4 dark:border-gray-600 md:p-5"
         >
           <h3 class="text-xl font-medium text-gray-900 dark:text-white">
-            {{ createElement ? 'Create' : 'Edit' }}
+            {{ createElement ? 'Create row' : 'Edit row' }}
           </h3>
           <button
             type="button"
