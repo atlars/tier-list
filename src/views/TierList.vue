@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import TierElement from '@/components/TierElement.vue'
 import TierRow from '@/components/TierRow.vue'
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
 import ContextMenu, {
-type ContextMenuItem,
-type ContextMenuResult
+  type ContextMenuItem,
+  type ContextMenuResult
 } from '@/components/dialogs/ContextMenu.vue'
 import ElementDialog from '@/components/dialogs/ElementDialog.vue'
 import RowDialog from '@/components/dialogs/RowDialog.vue'
@@ -141,9 +142,18 @@ function resetTierElements() {
   })
 }
 
-function newFile() {
-  tierRows.value = []
-  availableElements.value = []
+async function newFile() {
+  let successful = (await openDialog(ConfirmDialog, {
+    text: 'Are you sure?',
+    subText: 'Your progress will be deleted',
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No'
+  })) as boolean
+
+  if (successful) {
+    tierRows.value = []
+    availableElements.value = []
+  }
 }
 
 function closeActiveDialog() {
