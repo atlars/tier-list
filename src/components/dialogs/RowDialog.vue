@@ -142,4 +142,3 @@ input[type='color']::-webkit-color-swatch {
   border-style: 1px solid rgb(95, 95, 95);
 }
 </style>
-@/plugins/promise-dialog/promise-dialog
