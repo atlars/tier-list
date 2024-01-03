@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onKeyUp } from '@vueuse/core'
 import { ref } from 'vue'
+import { useFocusTrap } from '@vueuse/integrations/useFocusTrap'
 
 interface Props {
   text?: string
@@ -25,6 +26,7 @@ defineExpose({
 
 onKeyUp('Escape', cancel)
 onClickOutside(dialog, cancel)
+useFocusTrap(dialog, { immediate: true, initialFocus: false })
 
 function cancel() {
   closeDialog(false)

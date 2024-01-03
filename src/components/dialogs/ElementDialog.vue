@@ -2,6 +2,7 @@
 import { ref, toRaw } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { onKeyUp } from '@vueuse/core'
+import { useFocusTrap } from '@vueuse/integrations/useFocusTrap'
 
 const props = defineProps<Props>()
 
@@ -24,6 +25,7 @@ const createElement: boolean = props.tierElement === undefined
 
 onClickOutside(modal, cancel)
 onKeyUp('Escape', cancel)
+useFocusTrap(modal, { immediate: true, initialFocus: false })
 
 function submit() {
   closeDialog(tierElement)

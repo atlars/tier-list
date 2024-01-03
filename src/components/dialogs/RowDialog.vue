@@ -2,6 +2,7 @@
 import { onKeyUp } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import { ref, toRaw } from 'vue'
+import { useFocusTrap } from '@vueuse/integrations/useFocusTrap'
 import { tierColorPresets } from '~/constants'
 
 interface Props {
@@ -33,8 +34,13 @@ function cancel() {
   closeDialog(undefined)
 }
 
+function setBackgroundColor(color: string) {
+  row.backgroundColor = color
+}
+
 onClickOutside(modal, cancel)
 onKeyUp('Escape', cancel)
+useFocusTrap(modal, { immediate: true, initialFocus: false })
 
 defineExpose({
   returnValue: (): TierRowData | undefined => {
@@ -113,9 +119,11 @@ defineExpose({
               <li
                 v-for="(color, index) in tierColorPresets"
                 :key="index"
+                tabindex="0"
                 class="me-3 inline-block h-9 w-9 rounded-full border-1 border-white hover:cursor-pointer hover:border-slate-400"
                 :style="{ backgroundColor: color }"
-                @click="row.backgroundColor = color"
+                @click="setBackgroundColor(color)"
+                @keydown.enter="setBackgroundColor(color)"
               />
             </ul>
           </div>
