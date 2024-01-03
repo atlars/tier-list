@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import type { TierElementData } from '@/views/TierList.vue'
-import { onClickOutside, onKeyUp } from '@vueuse/core'
 import { ref, toRaw } from 'vue'
 import { v4 as uuid } from 'uuid'
-import { closeDialog } from '@/plugins/promise-dialog'
+import { onKeyUp } from '@vueuse/core'
+
+const props = defineProps<Props>()
 
 const modal = ref<HTMLElement | null>(null)
 
@@ -11,19 +11,19 @@ interface Props {
   tierElement?: TierElementData
 }
 
-let props = defineProps<Props>()
-
 const defaultElement: TierElementData = {
   id: uuid(),
   backgroundColor: '#5c7cff',
-  textColor: '#000000'
+  textColor: '#000000',
 }
+
+const { openDialog, closeDialog } = useDialog()
 
 const tierElement = props.tierElement ? { ...toRaw(props.tierElement) } : defaultElement
 const createElement: boolean = props.tierElement === undefined
 
 onClickOutside(modal, cancel)
-onKeyUp("Escape", cancel)
+onKeyUp('Escape', cancel)
 
 function submit() {
   closeDialog(tierElement)
@@ -36,20 +36,18 @@ function cancel() {
 defineExpose({
   returnValue: (): TierElementData | undefined => {
     return undefined
-  }
+  },
 })
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-50 flex h-full max-h-full w-full justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-40 p-4 pt-8"
-  >
+  <div class="fixed inset-0 z-50 flex h-full max-h-full w-full justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-40 p-4 pt-8">
     <div class="relative max-h-full w-full max-w-lg">
       <!-- Modal content -->
-      <div class="relative rounded-lg bg-white shadow dark:bg-gray-700" ref="modal">
+      <div ref="modal" class="relative rounded-lg bg-white shadow dark:bg-gray-700">
         <!-- Modal header -->
         <div
-          class="flex items-center justify-between rounded-t border-b p-4 dark:border-gray-600 md:p-5"
+          class="flex items-center justify-between rounded-t border-b p-4 md:p-5 dark:border-gray-600"
         >
           <h3 class="text-xl font-medium text-gray-900 dark:text-white">
             {{ createElement ? 'Create element' : 'Edit element' }}
@@ -78,33 +76,32 @@ defineExpose({
         </div>
         <!-- Modal body -->
         <div class="space-y-4 p-4 md:p-5">
-          <!--Text-->
+          <!-- Text -->
           <div class="flex items-end gap-2">
             <div class="flex-1">
-              <label for="name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                >Text</label
-              >
+              <label
+                for="name"
+                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Text</label>
               <input
-                type="text"
                 id="name"
-                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                maxlength="40"
                 v-model="tierElement.text"
-              />
+                type="text"
+                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                maxlength="40"
+              >
             </div>
 
             <input
+              v-model="tierElement.textColor"
               class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
               type="color"
-              v-model="tierElement.textColor"
-            />
+            >
           </div>
 
-          <!--Background-->
+          <!-- Background -->
           <div>
-            <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Background</label
-            >
+            <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Background</label>
             <div class="flex items-center">
               <div class="flex flex-1">
                 <span
@@ -121,24 +118,24 @@ defineExpose({
                   </svg>
                 </span>
                 <input
-                  type="text"
-                  class="block w-full min-w-0 flex-1 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                  placeholder="https://placehold.co/600x400.png"
                   v-model="tierElement.imageUrl"
-                />
+                  type="text"
+                  class="block w-full min-w-0 flex-1 rounded-none rounded-e-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                  placeholder="https://placehold.co/600x400.png"
+                >
               </div>
               <span class="px-4 dark:text-white">or</span>
               <input
+                v-model="tierElement.backgroundColor"
                 class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
                 type="color"
-                v-model="tierElement.backgroundColor"
-              />
+              >
             </div>
           </div>
         </div>
         <!-- Modal footer -->
         <div
-          class="flex items-center rounded-b border-t border-gray-200 p-4 dark:border-gray-600 md:p-5"
+          class="flex items-center rounded-b border-t border-gray-200 p-4 md:p-5 dark:border-gray-600"
         >
           <button
             data-modal-hide="medium-modal"

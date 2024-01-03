@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { closeDialog } from '@/plugins/promise-dialog'
-import { onClickOutside } from '@vueuse/core'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 export interface ContextMenuItem {
@@ -18,6 +16,8 @@ const props = defineProps<{
   event: MouseEvent
   context?: any
 }>()
+
+const { openDialog, closeDialog } = useDialog()
 
 const top = ref(0)
 const left = ref(0)
@@ -69,21 +69,26 @@ defineExpose({
   close,
   returnValue: (): ContextMenuResult => {
     return { itemName: undefined, context: props.context }
-  }
+  },
 })
 </script>
 
 <template>
   <div
-    class="fixed z-50 cursor-default divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
-    :style="{ top: top + 'px', left: left + 'px' }"
     ref="menu"
+    class="fixed z-50 cursor-default divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
+    :style="{
+      top: `${top}px`,
+      left: `${left}px`,
+    }"
   >
     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
       <li v-for="(item, index) in props.items" :key="index">
         <a
           class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-          :class="{ 'flex items-center justify-start gap-1 ': item.icon }"
+          :class="{
+            'flex items-center justify-start gap-1 ': item.icon,
+          }"
           @click.prevent="menuItemClicked(item.name)"
         >
           <span v-if="item.icon === 'edit'">
@@ -108,7 +113,7 @@ defineExpose({
               />
             </svg>
           </span>
-          <span v-html="item.name"></span>
+          <span v-html="item.name" />
         </a>
       </li>
     </ul>

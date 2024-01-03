@@ -1,59 +1,39 @@
 <script setup lang="ts">
-import TierElement from '@/components/TierElement.vue'
-import TierRow from '@/components/TierRow.vue'
-import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
-import ContextMenu, {
-  type ContextMenuItem,
-  type ContextMenuResult
-} from '@/components/dialogs/ContextMenu.vue'
-import ElementDialog from '@/components/dialogs/ElementDialog.vue'
-import RowDialog from '@/components/dialogs/RowDialog.vue'
-import { LocalStorageKeys } from '@/constants'
-import { closeDialog, openDialog } from '@/plugins/promise-dialog'
-import DialogWrapper from '@/plugins/promise-dialog/DialogWrapper.vue'
 import { useStorage } from '@vueuse/core'
 import { ref } from 'vue'
 import draggable from 'vuedraggable'
-
-export interface TierRowData {
-  id: string
-  text: string
-  textColor?: string
-  backgroundColor?: string
-  elements: TierElementData[]
-}
-
-export interface TierElementData {
-  id: string
-  text?: string
-  textColor?: string
-  backgroundColor?: string
-  imageUrl?: string
-}
+import { LocalStorageKeys } from '@/constants'
+import type { ContextMenuItem, ContextMenuResult } from '~/components/dialogs/ContextMenu.vue'
+import ContextMenu from '@/components/dialogs/ContextMenu.vue'
+import ElementDialog from '@/components/dialogs/ElementDialog.vue'
+import RowDialog from '@/components/dialogs/RowDialog.vue'
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
 
 const tierRows = useStorage<TierRowData[]>(LocalStorageKeys.TierRows, [])
 const availableElements = useStorage<TierElementData[]>(LocalStorageKeys.AvailableTierElements, [])
+
+const { openDialog, closeDialog } = useDialog()
 
 const drag = ref(false)
 
 const contextMenuItems: ContextMenuItem[] = [
   {
     name: 'Edit',
-    icon: 'edit'
+    icon: 'edit',
   },
   {
     name: 'Delete',
-    icon: 'delete'
-  }
+    icon: 'delete',
+  },
 ]
 
 async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
   event.preventDefault()
 
-  let result = (await openDialog(ContextMenu, {
+  const result = (await openDialog(ContextMenu, {
     items: contextMenuItems,
     event: event,
-    context: tierElement
+    context: tierElement,
   })) as ContextMenuResult
 
   if (result.itemName && result.context) {
@@ -69,10 +49,10 @@ async function openElementContextMenu(event: MouseEvent, tierElement: TierElemen
   event.preventDefault()
   event.stopPropagation()
 
-  let result = (await openDialog(ContextMenu, {
+  const result = (await openDialog(ContextMenu, {
     items: contextMenuItems,
     event: event,
-    context: tierElement
+    context: tierElement,
   })) as ContextMenuResult
 
   if (result.itemName && result.context) {
@@ -85,49 +65,49 @@ async function openElementContextMenu(event: MouseEvent, tierElement: TierElemen
 }
 
 async function addTierElement() {
-  let result = (await openDialog(ElementDialog)) as TierElementData
+  const result = (await openDialog(ElementDialog)) as TierElementData
   if (result) availableElements.value.push(result)
 }
 
 function deleteElement(element: TierElementData) {
-  availableElements.value = availableElements.value.filter((e) => e.id !== element.id)
+  availableElements.value = availableElements.value.filter(e => e.id !== element.id)
   tierRows.value.forEach((item) => {
-    item.elements = item.elements.filter((e) => e.id !== element.id)
+    item.elements = item.elements.filter(e => e.id !== element.id)
   })
 }
 
 function deleteRow(row: TierRowData) {
-  let index = tierRows.value.findIndex((r) => r.id === row.id)
+  const index = tierRows.value.findIndex(r => r.id === row.id)
   if (index >= 0) tierRows.value.splice(index, 1)
 }
 
 async function editElement(element: TierElementData) {
-  let result = (await openDialog(ElementDialog, {
-    tierElement: element
+  const result = (await openDialog(ElementDialog, {
+    tierElement: element,
   })) as TierElementData
   if (result) updateElement(result)
 }
 
 async function createRow() {
-  let result = (await openDialog(RowDialog)) as TierRowData
+  const result = (await openDialog(RowDialog)) as TierRowData
   if (result) tierRows.value.push(result)
 }
 
 async function editRow(row: TierRowData) {
-  let result = (await openDialog(RowDialog, { rowData: row })) as TierRowData
+  const result = (await openDialog(RowDialog, { rowData: row })) as TierRowData
   if (result) updateRow(result)
 }
 
 function updateRow(row: TierRowData) {
-  let index = tierRows.value.findIndex((r) => r.id === row.id)
+  const index = tierRows.value.findIndex(r => r.id === row.id)
   tierRows.value.splice(index, 1, row)
 }
 
 function updateElement(element: TierElementData) {
-  let index = availableElements.value.findIndex((e) => e.id === element.id)
+  let index = availableElements.value.findIndex(e => e.id === element.id)
   if (index <= -1) {
     tierRows.value.forEach((row) => {
-      index = row.elements.findIndex((e) => e.id === element.id)
+      index = row.elements.findIndex(e => e.id === element.id)
       if (index >= 0) row.elements.splice(index, 1, element)
     })
   } else {
@@ -143,11 +123,11 @@ function resetTierElements() {
 }
 
 async function newFile() {
-  let successful = (await openDialog(ConfirmDialog, {
+  const successful = (await openDialog(ConfirmDialog, {
     text: 'Are you sure?',
     subText: 'Your progress will be deleted',
     confirmButtonText: 'Yes',
-    cancelButtonText: 'No'
+    cancelButtonText: 'No',
   })) as boolean
 
   if (successful) {
@@ -172,14 +152,10 @@ function onRowDragStart() {
       <!-- New row button -->
       <button
         type="button"
-        @click="newFile"
         class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        @click="newFile"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 -960 960 960"
-          class="me-1 h-5 w-5 fill-white"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="me-1 h-5 w-5 fill-white">
           <path
             d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"
           />
@@ -214,8 +190,8 @@ function onRowDragStart() {
       <!-- Reset elements button -->
       <button
         type="button"
-        @click="resetTierElements"
         class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        @click="resetTierElements"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-5 w-5 fill-white">
           <path
@@ -224,7 +200,7 @@ function onRowDragStart() {
         </svg>
       </button>
 
-      <div class="flex-1"></div>
+      <div class="flex-1" />
 
       <!-- New row button -->
       <button
@@ -232,18 +208,14 @@ function onRowDragStart() {
         class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         @click="createRow"
       >
-        <svg
-          class="me-1 h-5 w-5 fill-white"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 -960 960 960"
-        >
+        <svg class="me-1 h-5 w-5 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
           <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
         </svg>
         Row
       </button>
     </div>
 
-    <div class="my-2"></div>
+    <div class="my-2" />
     <!--- Tier rows -->
     <draggable
       :list="tierRows"
@@ -257,32 +229,33 @@ function onRowDragStart() {
         type: 'transition-group',
         class: drag
           ? 'flex flex-col cursor-move gap-[0.2rem] bg-gray-800'
-          : 'flex flex-col gap-[0.2rem] bg-gray-800'
+          : 'flex flex-col gap-[0.2rem] bg-gray-800',
       }"
       @start="onRowDragStart"
       @end="drag = false"
     >
-      <!--Tier elements of rows -->
-      <template #item="{ element }">
-        <TierRow :row="element" @contextmenu="openRowContextMenu($event, element)">
+      <!-- Tier elements of rows -->
+      <template
+        #item="{ element: tierRow }"
+      >
+        <TierRow :row="tierRow" @contextmenu="openRowContextMenu($event, tierRow)">
           <template #elements>
             <draggable
-              :list="element.elements"
+              :list="tierRow.elements"
               :group="{ name: 'tier-elements' }"
               item-key="id"
               animation="200"
               :component-data="{
                 name: 'tier-element',
                 type: 'transition-group',
-                class: 'flex flex-row w-full gap-1 flex-wrap items-start mx-1'
+                class: 'flex flex-row w-full gap-1 flex-wrap items-start mx-1',
               }"
               @start="closeActiveDialog"
             >
-              <template #item="{ element }">
-                <TierElement
-                  :element="element"
-                  @contextmenu="openElementContextMenu($event, element)"
-                />
+              <template
+                #item="{ element: tierElement }"
+              >
+                <TierElement :element="tierElement" @contextmenu="openElementContextMenu($event, tierElement)" />
               </template>
             </draggable>
           </template>
@@ -299,11 +272,13 @@ function onRowDragStart() {
         animation="300"
         :component-data="{
           name: 'available-element',
-          class: 'flex flex-row flex-wrap items-center w-full h-full gap-3'
+          class: 'flex flex-row flex-wrap items-center w-full h-full gap-3',
         }"
         @start="closeActiveDialog"
       >
-        <template #item="{ element }">
+        <template
+          #item="{ element }"
+        >
           <TierElement :element="element" @contextmenu="openElementContextMenu($event, element)" />
         </template>
 
@@ -335,6 +310,7 @@ function onRowDragStart() {
 .flip-list-move {
   transition: transform 0.5s;
 }
+
 .tier-element-move {
   transition: transform 0.5s;
 }
@@ -343,4 +319,3 @@ function onRowDragStart() {
   transition: transform 0.5s;
 }
 </style>
-@/plugins/promise-dialog/promise-dialog

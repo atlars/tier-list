@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import { closeDialog } from '@/plugins/promise-dialog'
-import type { TierRowData } from '@/views/TierList.vue'
-import { onClickOutside, onKeyUp } from '@vueuse/core'
+import { onKeyUp } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import { ref, toRaw } from 'vue'
 
@@ -9,14 +7,16 @@ interface Props {
   rowData?: TierRowData
 }
 
-let props = defineProps<Props>()
+const props = defineProps<Props>()
+
+const { openDialog, closeDialog } = useDialog()
 
 const defaultRowData: TierRowData = {
   id: uuid(),
   text: '',
   textColor: '#000000',
   backgroundColor: '#E68281',
-  elements: []
+  elements: [],
 }
 
 const row = props.rowData ? { ...toRaw(props.rowData) } : defaultRowData
@@ -33,25 +33,23 @@ function cancel() {
 }
 
 onClickOutside(modal, cancel)
-onKeyUp("Escape", cancel)
+onKeyUp('Escape', cancel)
 
 defineExpose({
   returnValue: (): TierRowData | undefined => {
     return undefined
-  }
+  },
 })
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-50 flex h-full max-h-full w-full justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-40 p-4 pt-8"
-  >
+  <div class="fixed inset-0 z-50 flex h-full max-h-full w-full justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-40 p-4 pt-8">
     <div class="relative max-h-full w-full max-w-lg">
       <!-- Modal content -->
-      <div class="relative rounded-lg bg-white shadow dark:bg-gray-700" ref="modal">
+      <div ref="modal" class="relative rounded-lg bg-white shadow dark:bg-gray-700">
         <!-- Modal header -->
         <div
-          class="flex items-center justify-between rounded-t border-b p-4 dark:border-gray-600 md:p-5"
+          class="flex items-center justify-between rounded-t border-b p-4 md:p-5 dark:border-gray-600"
         >
           <h3 class="text-xl font-medium text-gray-900 dark:text-white">
             {{ createElement ? 'Create row' : 'Edit row' }}
@@ -80,42 +78,41 @@ defineExpose({
         </div>
         <!-- Modal body -->
         <div class="space-y-4 p-4 md:p-5">
-          <!--Text-->
+          <!-- Text -->
           <div class="flex items-end gap-2">
             <div class="flex-1">
-              <label for="name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-                >Text</label
-              >
+              <label
+                for="name"
+                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Text</label>
               <input
-                type="text"
                 id="name"
-                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                maxlength="40"
                 v-model="row.text"
-              />
+                type="text"
+                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                maxlength="40"
+              >
             </div>
 
             <input
-              class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
-              type="color"
               v-model="row.textColor"
-            />
-          </div>
-          <!--Background-->
-          <div>
-            <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Background</label
-            >
-            <input
               class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
               type="color"
+            >
+          </div>
+          <!-- Background -->
+          <div>
+            <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Background</label>
+            <input
               v-model="row.backgroundColor"
-            />
+              class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
+              type="color"
+            >
           </div>
         </div>
         <!-- Modal footer -->
         <div
-          class="flex items-center rounded-b border-t border-gray-200 p-4 dark:border-gray-600 md:p-5"
+          class="flex items-center rounded-b border-t border-gray-200 p-4 md:p-5 dark:border-gray-600"
         >
           <button
             data-modal-hide="medium-modal"

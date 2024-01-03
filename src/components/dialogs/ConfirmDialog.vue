@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { closeDialog } from '@/plugins/promise-dialog'
-import { onClickOutside, onKeyUp } from '@vueuse/core'
+import { onKeyUp } from '@vueuse/core'
 import { ref } from 'vue'
 
 interface Props {
@@ -10,16 +9,18 @@ interface Props {
   cancelButtonText?: string
 }
 
-let props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   text: 'Are you sure?',
   confirmButtonText: 'Yes',
-  cancelButtonText: 'No'
+  cancelButtonText: 'No',
 })
 
-let dialog = ref<HTMLElement | null>(null)
+const { openDialog, closeDialog } = useDialog()
+
+const dialog = ref<HTMLElement | null>(null)
 
 defineExpose({
-  returnValue: () => false
+  returnValue: () => false,
 })
 
 onKeyUp('Escape', cancel)
@@ -35,11 +36,9 @@ function confirm() {
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-50 flex h-full w-full justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-40 pt-20"
-  >
+  <div class="fixed inset-0 z-50 flex h-full w-full justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-40 pt-20">
     <div class="relative max-h-full w-full max-w-md">
-      <div class="relative rounded-lg bg-white shadow dark:bg-gray-700" ref="dialog">
+      <div ref="dialog" class="relative rounded-lg bg-white shadow dark:bg-gray-700">
         <button
           type="button"
           class="absolute end-2.5 top-3 ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -74,7 +73,9 @@ function confirm() {
               />
             </svg>
             <div class="inline-block align-middle">
-              <h1 class="text-xl font-normal text-gray-700 dark:text-gray-500">{{ props.text }}</h1>
+              <h1 class="text-xl font-normal text-gray-700 dark:text-gray-500">
+                {{ props.text }}
+              </h1>
               <h2 class="text-base font-normal text-gray-500 dark:text-gray-400">
                 {{ props.subText }}
               </h2>
@@ -83,15 +84,15 @@ function confirm() {
           <div class="border-t border-gray-200 pt-4 text-right">
             <button
               type="button"
-              @click="confirm"
               class="me-2 inline-flex items-center rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+              @click="confirm"
             >
               {{ props.confirmButtonText }}
             </button>
             <button
               type="button"
-              @click="cancel"
               class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
+              @click="cancel"
             >
               {{ props.cancelButtonText }}
             </button>

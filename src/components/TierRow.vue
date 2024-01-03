@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import type { TierRowData } from '@/views/TierList.vue'
-
-let props = defineProps<{
+const props = defineProps<{
   row: TierRowData
 }>()
 </script>
 
 <template>
-  <div class="flex h-full min-h-[5rem] flex-row bg-gray-600 border-slate-600">
+  <div class="flex h-full min-h-[5rem] flex-row border-slate-600 bg-gray-600">
     <!-- Drag -->
-    <!-- Handle class indicates the draggable library the area to drag on-->
+    <!-- Handle class indicates the draggable library the area to drag on -->
     <div class="handle flex w-10 items-center justify-center">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" class="h-5 w-5 fill-white">
         <path
@@ -18,13 +16,24 @@ let props = defineProps<{
       </svg>
     </div>
     <!-- Name -->
-    <div class="flex w-24 items-center justify-center break-all p-4" :style="{ backgroundColor: props.row.backgroundColor ?? '#2563eb'}">
-      <p contenteditable="plaintext-only" class="text-white outline-none" :style="{ color: props.row.textColor ?? 'black'}">
+    <div
+      class="flex w-24 items-center justify-center break-all p-4"
+      :style="{
+        backgroundColor: props.row.backgroundColor ?? '#2563eb',
+      }"
+    >
+      <p
+        contenteditable="plaintext-only"
+        class="text-white outline-none"
+        :style="{
+          color: props.row.textColor ?? 'black',
+        }"
+      >
         {{ props.row.text }}
       </p>
     </div>
     <!-- Tier elements -->
-    <slot name="elements"></slot>
+    <slot name="elements" />
   </div>
 </template>
 
