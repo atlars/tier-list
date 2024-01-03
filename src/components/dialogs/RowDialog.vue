@@ -2,6 +2,7 @@
 import { onKeyUp } from '@vueuse/core'
 import { v4 as uuid } from 'uuid'
 import { ref, toRaw } from 'vue'
+import { tierColorPresets } from '~/constants'
 
 interface Props {
   rowData?: TierRowData
@@ -19,13 +20,13 @@ const defaultRowData: TierRowData = {
   elements: [],
 }
 
-const row = props.rowData ? { ...toRaw(props.rowData) } : defaultRowData
+const row = props.rowData ? reactive({ ...toRaw(props.rowData) }) : reactive(defaultRowData)
 const createElement: boolean = props.rowData === undefined
 
 const modal = ref<HTMLElement | null>(null)
 
 function submit() {
-  closeDialog(row)
+  closeDialog({ ...toRaw(row) })
 }
 
 function cancel() {
@@ -108,6 +109,15 @@ defineExpose({
               class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
               type="color"
             >
+            <ul class="mt-2">
+              <li
+                v-for="(color, index) in tierColorPresets"
+                :key="index"
+                class="me-3 inline-block h-9 w-9 rounded-full border-1 border-white hover:cursor-pointer hover:border-slate-400"
+                :style="{ backgroundColor: color }"
+                @click="row.backgroundColor = color"
+              />
+            </ul>
           </div>
         </div>
         <!-- Modal footer -->

@@ -17,7 +17,7 @@ const config = useRuntimeConfig()
       <NuxtPage />
     </main>
     <footer class="my-2 text-center text-sm font-thin">
-      v {{ config.public.vesion }}
+      v{{ config.public.vesion }}
     </footer>
   </div>
 </template>

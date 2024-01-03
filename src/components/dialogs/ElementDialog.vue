@@ -13,7 +13,7 @@ interface Props {
 
 const defaultElement: TierElementData = {
   id: uuid(),
-  backgroundColor: '#5c7cff',
+  backgroundColor: '#f0f0f0',
   textColor: '#000000',
 }
 
