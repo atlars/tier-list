@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+import { toPng } from 'html-to-image'
 import { ref } from 'vue'
 import draggable from 'vuedraggable'
-import { LocalStorageKeys } from '@/constants'
-import type { ContextMenuItem, ContextMenuResult } from '~/components/dialogs/ContextMenu.vue'
+import colors from 'tailwindcss/colors'
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
 import ContextMenu from '@/components/dialogs/ContextMenu.vue'
 import ElementDialog from '@/components/dialogs/ElementDialog.vue'
 import RowDialog from '@/components/dialogs/RowDialog.vue'
-import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
+import { LocalStorageKeys } from '@/constants'
+import type { ContextMenuItem, ContextMenuResult } from '~/components/dialogs/ContextMenu.vue'
 
 const tierRows = useStorage<TierRowData[]>(LocalStorageKeys.TierRows, [])
 const availableElements = useStorage<TierElementData[]>(LocalStorageKeys.AvailableTierElements, [])
@@ -26,6 +28,8 @@ const contextMenuItems: ContextMenuItem[] = [
     icon: 'delete',
   },
 ]
+
+const tierList = ref<HTMLElement | null>(null)
 
 async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
   event.preventDefault()
@@ -136,6 +140,27 @@ async function newFile() {
   }
 }
 
+async function exportList() {
+  if (!tierList.value) return
+
+  const filter = (node: HTMLElement) => {
+    // Do not render handle
+    return !node.classList?.contains('handle')
+  }
+
+  const dataUrl = await toPng(tierList.value, {
+    width: 1024,
+    pixelRatio: 2,
+    cacheBust: true,
+    filter: filter,
+  })
+
+  const link = document.createElement('a')
+  link.href = dataUrl
+  link.download = 'captured_image.png'
+  link.click()
+}
+
 function closeActiveDialog() {
   closeDialog()
 }
@@ -163,7 +188,7 @@ function onRowDragStart() {
         New
       </button>
 
-      <!-- Download button -->
+      <!-- Save button -->
       <button
         type="button"
         class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -175,10 +200,11 @@ function onRowDragStart() {
         </svg>
       </button>
 
-      <!-- Export button -->
+      <!-- Download button -->
       <button
         type="button"
         class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        @click="exportList"
       >
         <svg class="h-5 w-5 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
           <path
@@ -216,53 +242,55 @@ function onRowDragStart() {
     </div>
 
     <div class="my-2" />
-    <!--- Tier rows -->
-    <draggable
-      :list="tierRows"
-      item-key="id"
-      :group="{ name: 'tier-rows' }"
-      handle=".handle"
-      ghost-class="bg-gray-500"
-      animation="200"
-      :component-data="{
-        name: !drag ? 'flip-list' : null,
-        type: 'transition-group',
-        class: drag
-          ? 'flex flex-col cursor-move gap-[0.2rem] bg-gray-800'
-          : 'flex flex-col gap-[0.2rem] bg-gray-800',
-      }"
-      @start="onRowDragStart"
-      @end="drag = false"
-    >
-      <!-- Tier elements of rows -->
-      <template
-        #item="{ element: tierRow }"
-      >
-        <TierRow :row="tierRow" @contextmenu="openRowContextMenu($event, tierRow)">
-          <template #elements>
-            <draggable
-              :list="tierRow.elements"
-              :group="{ name: 'tier-elements' }"
-              item-key="id"
-              animation="200"
-              :component-data="{
-                name: 'tier-element',
-                type: 'transition-group',
-                class: 'flex flex-row w-full gap-1 flex-wrap items-start mx-1',
-              }"
-              @start="closeActiveDialog"
-            >
-              <template
-                #item="{ element: tierElement }"
-              >
-                <TierElement :element="tierElement" @contextmenu="openElementContextMenu($event, tierElement)" />
-              </template>
-            </draggable>
-          </template>
-        </TierRow>
-      </template>
-    </draggable>
 
+    <div ref="tierList" class="box-content">
+      <draggable
+        :list="tierRows"
+        item-key="id"
+        :group="{ name: 'tier-rows' }"
+        handle=".handle"
+        ghost-class="bg-gray-500"
+        animation="200"
+        :component-data="{
+          name: !drag ? 'flip-list' : null,
+          type: 'transition-group',
+          class: drag
+            ? 'cursor-move'
+            : '',
+        }"
+        @start="onRowDragStart"
+        @end="drag = false"
+      >
+        <!-- Tier rows -->
+        <template
+          #item="{ element: tierRow }"
+        >
+          <TierRow :row="tierRow" @contextmenu="openRowContextMenu($event, tierRow) ">
+            <template #elements>
+              <draggable
+                :list="tierRow.elements"
+                :group="{ name: 'tier-elements' }"
+                item-key="id"
+                animation="200"
+                :component-data="{
+                  name: 'tier-element',
+                  type: 'transition-group',
+                  class: 'flex flex-row w-full items-start flex-wrap',
+                }"
+                @start="closeActiveDialog"
+              >
+                <!-- Tier elements -->
+                <template
+                  #item="{ element: tierElement }"
+                >
+                  <TierElement :element="tierElement" @contextmenu="openElementContextMenu($event, tierElement)" />
+                </template>
+              </draggable>
+            </template>
+          </TierRow>
+        </template>
+      </draggable>
+    </div>
     <!--- Available tier items -->
     <div class="mt-4 min-h-[7.0rem] border border-gray-200 bg-slate-50 p-4">
       <draggable

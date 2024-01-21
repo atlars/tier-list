@@ -5,7 +5,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="flex h-full min-h-[5rem] flex-row border-slate-600 bg-gray-600">
+  <div class="flex h-full min-h-[5rem] flex-row border-t-2 border-black bg-slate-600 first:border-t-0">
     <!-- Drag -->
     <!-- Handle class indicates the draggable library the area to drag on -->
     <div class="handle flex w-10 items-center justify-center">
@@ -17,7 +17,7 @@ const props = defineProps<{
     </div>
     <!-- Name -->
     <div
-      class="flex w-24 items-center justify-center break-all p-4"
+      class="flex w-24 items-center justify-center break-all border-r-2 border-black p-4"
       :style="{
         backgroundColor: props.row.backgroundColor ?? '#2563eb',
       }"
