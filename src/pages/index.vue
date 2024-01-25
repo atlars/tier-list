@@ -196,7 +196,7 @@ function toolbarItemClicked(item: ToolbarItem) {
 
     <div class="my-8" />
 
-    <div ref="tierList" class="box-content">
+    <div ref="tierList">
       <draggable
         :list="tierRows"
         item-key="id"
