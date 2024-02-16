@@ -11,8 +11,8 @@ import { LocalStorageKeys } from '@/constants'
 import type { ContextMenuItem, ContextMenuResult } from '~/components/dialogs/ContextMenu.vue'
 import { ToolbarItem } from '@/types/editor'
 
-const tierRows = useStorage<TierRowData[]>(LocalStorageKeys.TierRows, [])
-const availableElements = useStorage<TierElementData[]>(LocalStorageKeys.AvailableTierElements, [])
+const tierRows = useStorage<TierRow[]>(LocalStorageKeys.TierRows, [])
+const availableElements = useStorage<TierElement[]>(LocalStorageKeys.AvailableTierElements, [])
 
 const { openDialog, closeDialog } = useDialog()
 
@@ -31,7 +31,7 @@ const contextMenuItems: ContextMenuItem[] = [
 
 const tierList = ref<HTMLElement | null>(null)
 
-async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
+async function openRowContextMenu(event: MouseEvent, tierElement: TierRow) {
   event.preventDefault()
 
   const result = (await openDialog(ContextMenu, {
@@ -49,7 +49,7 @@ async function openRowContextMenu(event: MouseEvent, tierElement: TierRowData) {
   }
 }
 
-async function openElementContextMenu(event: MouseEvent, tierElement: TierElementData) {
+async function openElementContextMenu(event: MouseEvent, tierElement: TierElement) {
   event.preventDefault()
   event.stopPropagation()
 
@@ -69,45 +69,45 @@ async function openElementContextMenu(event: MouseEvent, tierElement: TierElemen
 }
 
 async function addTierElement() {
-  const result = (await openDialog(ElementDialog)) as TierElementData
+  const result = (await openDialog(ElementDialog)) as TierElement
   if (result) availableElements.value.push(result)
 }
 
-function deleteElement(element: TierElementData) {
+function deleteElement(element: TierElement) {
   availableElements.value = availableElements.value.filter(e => e.id !== element.id)
   tierRows.value.forEach((item) => {
     item.elements = item.elements.filter(e => e.id !== element.id)
   })
 }
 
-function deleteRow(row: TierRowData) {
+function deleteRow(row: TierRow) {
   const index = tierRows.value.findIndex(r => r.id === row.id)
   if (index >= 0) tierRows.value.splice(index, 1)
 }
 
-async function editElement(element: TierElementData) {
+async function editElement(element: TierElement) {
   const result = (await openDialog(ElementDialog, {
     tierElement: element,
-  })) as TierElementData
+  })) as TierElement
   if (result) updateElement(result)
 }
 
 async function createRow() {
-  const result = (await openDialog(RowDialog)) as TierRowData
+  const result = (await openDialog(RowDialog)) as TierRow
   if (result) tierRows.value.push(result)
 }
 
-async function editRow(row: TierRowData) {
-  const result = (await openDialog(RowDialog, { rowData: row })) as TierRowData
+async function editRow(row: TierRow) {
+  const result = (await openDialog(RowDialog, { rowData: row })) as TierRow
   if (result) updateRow(result)
 }
 
-function updateRow(row: TierRowData) {
+function updateRow(row: TierRow) {
   const index = tierRows.value.findIndex(r => r.id === row.id)
   tierRows.value.splice(index, 1, row)
 }
 
-function updateElement(element: TierElementData) {
+function updateElement(element: TierElement) {
   let index = availableElements.value.findIndex(e => e.id === element.id)
   if (index <= -1) {
     tierRows.value.forEach((row) => {

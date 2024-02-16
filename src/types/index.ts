@@ -1,12 +1,18 @@
-interface TierRowData {
+interface TierList {
+  id: string
+  name: string
+  tierRows: TierRow[]
+}
+
+interface TierRow {
   id: string
   text: string
   textColor?: string
   backgroundColor?: string
-  elements: TierElementData[]
+  elements: TierElement[]
 }
 
-interface TierElementData {
+interface TierElement {
   id: string
   text?: string
   textColor?: string
