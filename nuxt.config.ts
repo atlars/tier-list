@@ -4,7 +4,7 @@ import pkg from './package.json'
 export default defineNuxtConfig({
   srcDir: 'src/',
   devtools: { enabled: true },
-  modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss'],
+  modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@pinia/nuxt'],
   css: ['@/assets/main.css'],
   routeRules: {
     '/': { ssr: false },
