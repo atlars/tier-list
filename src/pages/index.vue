@@ -3,12 +3,10 @@ import { toPng } from 'html-to-image'
 import { ref } from 'vue'
 import draggable from 'vuedraggable'
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
-import ContextMenu from '@/components/dialogs/ContextMenu.vue'
 import ElementDialog from '@/components/dialogs/ElementDialog.vue'
 import RowDialog from '@/components/dialogs/RowDialog.vue'
-import type { ContextMenuItem, ContextMenuResult } from '~/components/dialogs/ContextMenu.vue'
-import { ToolbarItem } from '@/types/editor'
 import { useEditorStore } from '@/stores/editor'
+import { ToolbarItem } from '@/types/editor'
 
 const store = useEditorStore()
 const { editorTierList: list } = storeToRefs(store)
@@ -17,76 +15,16 @@ const { openDialog, closeDialog } = useDialog()
 
 const drag = ref(false)
 
-const contextMenuItems: ContextMenuItem[] = [
-  {
-    name: 'Edit',
-    icon: 'edit',
-  },
-  {
-    name: 'Delete',
-    icon: 'delete',
-  },
-]
-
 const tierList = ref<HTMLElement | null>(null)
-
-async function openRowContextMenu(event: MouseEvent, tierElement: TierRow) {
-  event.preventDefault()
-
-  const result = (await openDialog(ContextMenu, {
-    items: contextMenuItems,
-    event: event,
-    context: tierElement,
-  })) as ContextMenuResult
-
-  if (result.itemName && result.context) {
-    if (result.itemName === 'Delete') {
-      store.deleteRow(result.context)
-    } else if (result.itemName === 'Edit') {
-      editRow(result.context)
-    }
-  }
-}
-
-async function openElementContextMenu(event: MouseEvent, tierElement: TierElement) {
-  event.preventDefault()
-  event.stopPropagation()
-
-  const result = (await openDialog(ContextMenu, {
-    items: contextMenuItems,
-    event: event,
-    context: tierElement,
-  })) as ContextMenuResult
-
-  if (result.itemName && result.context) {
-    if (result.itemName === 'Delete') {
-      store.deleteElement(result.context)
-    } else if (result.itemName === 'Edit') {
-      editElement(result.context)
-    }
-  }
-}
 
 async function addTierElement() {
   const result = (await openDialog(ElementDialog)) as TierElement
   if (result) store.addElement(result)
 }
 
-async function editElement(element: TierElement) {
-  const result = (await openDialog(ElementDialog, {
-    tierElement: element,
-  })) as TierElement
-  if (result) store.updateElement(result)
-}
-
 async function createRow() {
   const result = (await openDialog(RowDialog)) as TierRow
   if (result) store.addRow(result)
-}
-
-async function editRow(row: TierRow) {
-  const result = (await openDialog(RowDialog, { rowData: row })) as TierRow
-  if (result) store.updateRow(result)
 }
 
 function resetTierElements() {
@@ -178,7 +116,7 @@ function toolbarItemClicked(item: ToolbarItem) {
       >
         <!-- Tier rows -->
         <template #item="{ element: tierRow }">
-          <TierRow :row="tierRow" @contextmenu="openRowContextMenu($event, tierRow) ">
+          <TierRow :row="tierRow">
             <template #elements>
               <draggable
                 :list="tierRow.elements"
@@ -194,7 +132,7 @@ function toolbarItemClicked(item: ToolbarItem) {
               >
                 <!-- Tier elements -->
                 <template #item="{ element: tierElement }">
-                  <TierElement :element="tierElement" @contextmenu="openElementContextMenu($event, tierElement)" />
+                  <TierElement :element="tierElement" />
                 </template>
               </draggable>
             </template>
@@ -217,7 +155,7 @@ function toolbarItemClicked(item: ToolbarItem) {
         @start="closeActiveDialog"
       >
         <template #item="{ element }">
-          <TierElement :element="element" @contextmenu="openElementContextMenu($event, element)" />
+          <TierElement :element="element" />
         </template>
 
         <template #footer>

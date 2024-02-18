@@ -1,11 +1,53 @@
 <script setup lang="ts">
+import RowDialog from '@/components/dialogs/RowDialog.vue'
+import ContextMenu, { type ContextMenuItem, type ContextMenuResult } from '@/components/dialogs/ContextMenu.vue'
+
 const props = defineProps<{
   row: TierRow
 }>()
+const store = useEditorStore()
+const { openDialog } = useDialog()
+
+const contextMenuItems: ContextMenuItem[] = [
+  {
+    name: 'Edit',
+    icon: 'edit',
+  },
+  {
+    name: 'Delete',
+    icon: 'delete',
+  },
+]
+
+async function openContextMenu(event: MouseEvent, tierElement: TierRow) {
+  event.preventDefault()
+
+  const result = (await openDialog(ContextMenu, {
+    items: contextMenuItems,
+    event: event,
+    context: tierElement,
+  })) as ContextMenuResult
+
+  if (result.itemName && result.context) {
+    if (result.itemName === 'Delete') {
+      store.deleteRow(result.context)
+    } else if (result.itemName === 'Edit') {
+      editRow(result.context)
+    }
+  }
+}
+
+async function editRow(row: TierRow) {
+  const result = (await openDialog(RowDialog, { rowData: row })) as TierRow
+  if (result) store.updateRow(result)
+}
 </script>
 
 <template>
-  <div class="box-content flex h-full min-h-[5rem] flex-row border-t-2 border-black bg-slate-600 first:border-t-0">
+  <div
+    class="box-content flex h-full min-h-[5rem] flex-row border-t-2 border-black bg-slate-600 first:border-t-0"
+    @contextmenu="openContextMenu($event, row)"
+  >
     <!-- Drag -->
     <!-- Handle class indicates the draggable library the area to drag on -->
     <div class="handle flex w-10 items-center justify-center">

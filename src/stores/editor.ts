@@ -9,7 +9,7 @@ export const useEditorStore = defineStore('tier-lists', () => {
     tierRows: [],
     availableElements: [],
   }, {
-    // When value is overwritten, do not merge value with existing value in localStorage
+    // When value is overridden, do not merge value with existing value in localStorage
     mergeDefaults: false,
   })
 
