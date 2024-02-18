@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
 import { toPng } from 'html-to-image'
 import { ref } from 'vue'
 import draggable from 'vuedraggable'
@@ -7,12 +6,11 @@ import ConfirmDialog from '@/components/dialogs/ConfirmDialog.vue'
 import ContextMenu from '@/components/dialogs/ContextMenu.vue'
 import ElementDialog from '@/components/dialogs/ElementDialog.vue'
 import RowDialog from '@/components/dialogs/RowDialog.vue'
-import { LocalStorageKeys } from '@/constants'
 import type { ContextMenuItem, ContextMenuResult } from '~/components/dialogs/ContextMenu.vue'
 import { ToolbarItem } from '@/types/editor'
 
-const tierRows = useStorage<TierRow[]>(LocalStorageKeys.TierRows, [])
-const availableElements = useStorage<TierElement[]>(LocalStorageKeys.AvailableTierElements, [])
+const store = useTierListStore()
+const { editorTierList: list } = storeToRefs(store)
 
 const { openDialog, closeDialog } = useDialog()
 
@@ -70,19 +68,19 @@ async function openElementContextMenu(event: MouseEvent, tierElement: TierElemen
 
 async function addTierElement() {
   const result = (await openDialog(ElementDialog)) as TierElement
-  if (result) availableElements.value.push(result)
+  if (result) list.value.availableElements.push(result)
 }
 
 function deleteElement(element: TierElement) {
-  availableElements.value = availableElements.value.filter(e => e.id !== element.id)
-  tierRows.value.forEach((item) => {
+  list.value.availableElements = list.value.availableElements.filter(e => e.id !== element.id)
+  list.value.tierRows.forEach((item) => {
     item.elements = item.elements.filter(e => e.id !== element.id)
   })
 }
 
 function deleteRow(row: TierRow) {
-  const index = tierRows.value.findIndex(r => r.id === row.id)
-  if (index >= 0) tierRows.value.splice(index, 1)
+  const index = list.value.tierRows.findIndex(r => r.id === row.id)
+  if (index >= 0) list.value.tierRows.splice(index, 1)
 }
 
 async function editElement(element: TierElement) {
@@ -94,7 +92,7 @@ async function editElement(element: TierElement) {
 
 async function createRow() {
   const result = (await openDialog(RowDialog)) as TierRow
-  if (result) tierRows.value.push(result)
+  if (result) list.value.tierRows.push(result)
 }
 
 async function editRow(row: TierRow) {
@@ -103,25 +101,25 @@ async function editRow(row: TierRow) {
 }
 
 function updateRow(row: TierRow) {
-  const index = tierRows.value.findIndex(r => r.id === row.id)
-  tierRows.value.splice(index, 1, row)
+  const index = list.value.tierRows.findIndex(r => r.id === row.id)
+  list.value.tierRows.splice(index, 1, row)
 }
 
 function updateElement(element: TierElement) {
-  let index = availableElements.value.findIndex(e => e.id === element.id)
+  let index = list.value.availableElements.findIndex(e => e.id === element.id)
   if (index <= -1) {
-    tierRows.value.forEach((row) => {
+    list.value.tierRows.forEach((row) => {
       index = row.elements.findIndex(e => e.id === element.id)
       if (index >= 0) row.elements.splice(index, 1, element)
     })
   } else {
-    availableElements.value.splice(index, 1, element)
+    list.value.availableElements.splice(index, 1, element)
   }
 }
 
 function resetTierElements() {
-  tierRows.value.forEach((row) => {
-    availableElements.value.push(...row.elements)
+  list.value.tierRows.forEach((row) => {
+    list.value.availableElements.push(...row.elements)
     row.elements = []
   })
 }
@@ -134,10 +132,7 @@ async function newFile() {
     cancelButtonText: 'No',
   })) as boolean
 
-  if (successful) {
-    tierRows.value = []
-    availableElements.value = []
-  }
+  store.$reset()
 }
 
 async function exportList() {
@@ -198,7 +193,7 @@ function toolbarItemClicked(item: ToolbarItem) {
 
     <div ref="tierList">
       <draggable
-        :list="tierRows"
+        :list="list.tierRows"
         item-key="id"
         :group="{ name: 'tier-rows' }"
         handle=".handle"
@@ -242,7 +237,7 @@ function toolbarItemClicked(item: ToolbarItem) {
     <!--- Available tier items -->
     <div class="mt-4 min-h-[7.0rem] border border-gray-200 bg-slate-50 p-4">
       <draggable
-        :list="availableElements"
+        :list="list.availableElements"
         item-key="id"
         :group="{ name: 'tier-elements' }"
         animation="300"

@@ -6,14 +6,14 @@ import { useFocusTrap } from '@vueuse/integrations/useFocusTrap'
 import { tierColorPresets } from '~/constants'
 
 interface Props {
-  rowData?: TierRowData
+  rowData?: TierRow
 }
 
 const props = defineProps<Props>()
 
 const { openDialog, closeDialog } = useDialog()
 
-const defaultRowData: TierRowData = {
+const defaultRowData: TierRow = {
   id: uuid(),
   text: '',
   textColor: '#000000',
@@ -43,7 +43,7 @@ onKeyUp('Escape', cancel)
 useFocusTrap(modal, { immediate: true, initialFocus: false })
 
 defineExpose({
-  returnValue: (): TierRowData | undefined => {
+  returnValue: (): TierRow | undefined => {
     return undefined
   },
 })

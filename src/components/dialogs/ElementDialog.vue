@@ -9,10 +9,10 @@ const props = defineProps<Props>()
 const modal = ref<HTMLElement | null>(null)
 
 interface Props {
-  tierElement?: TierElementData
+  tierElement?: TierElement
 }
 
-const defaultElement: TierElementData = {
+const defaultElement: TierElement = {
   id: uuid(),
   backgroundColor: '#f0f0f0',
   textColor: '#000000',
@@ -36,7 +36,7 @@ function cancel() {
 }
 
 defineExpose({
-  returnValue: (): TierElementData | undefined => {
+  returnValue: (): TierElement | undefined => {
     return undefined
   },
 })

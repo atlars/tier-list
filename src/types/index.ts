@@ -2,6 +2,7 @@ interface TierList {
   id: string
   name: string
   tierRows: TierRow[]
+  availableElements: TierElement[]
 }
 
 interface TierRow {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  row: TierRowData
+  row: TierRow
 }>()
 </script>
 
