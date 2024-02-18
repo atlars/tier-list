@@ -8,8 +8,9 @@ import ElementDialog from '@/components/dialogs/ElementDialog.vue'
 import RowDialog from '@/components/dialogs/RowDialog.vue'
 import type { ContextMenuItem, ContextMenuResult } from '~/components/dialogs/ContextMenu.vue'
 import { ToolbarItem } from '@/types/editor'
+import { useEditorStore } from '@/stores/editor'
 
-const store = useTierListStore()
+const store = useEditorStore()
 const { editorTierList: list } = storeToRefs(store)
 
 const { openDialog, closeDialog } = useDialog()
@@ -40,7 +41,7 @@ async function openRowContextMenu(event: MouseEvent, tierElement: TierRow) {
 
   if (result.itemName && result.context) {
     if (result.itemName === 'Delete') {
-      deleteRow(result.context)
+      store.deleteRow(result.context)
     } else if (result.itemName === 'Edit') {
       editRow(result.context)
     }
@@ -59,7 +60,7 @@ async function openElementContextMenu(event: MouseEvent, tierElement: TierElemen
 
   if (result.itemName && result.context) {
     if (result.itemName === 'Delete') {
-      deleteElement(result.context)
+      store.deleteElement(result.context)
     } else if (result.itemName === 'Edit') {
       editElement(result.context)
     }
@@ -68,60 +69,28 @@ async function openElementContextMenu(event: MouseEvent, tierElement: TierElemen
 
 async function addTierElement() {
   const result = (await openDialog(ElementDialog)) as TierElement
-  if (result) list.value.availableElements.push(result)
-}
-
-function deleteElement(element: TierElement) {
-  list.value.availableElements = list.value.availableElements.filter(e => e.id !== element.id)
-  list.value.tierRows.forEach((item) => {
-    item.elements = item.elements.filter(e => e.id !== element.id)
-  })
-}
-
-function deleteRow(row: TierRow) {
-  const index = list.value.tierRows.findIndex(r => r.id === row.id)
-  if (index >= 0) list.value.tierRows.splice(index, 1)
+  if (result) store.addElement(result)
 }
 
 async function editElement(element: TierElement) {
   const result = (await openDialog(ElementDialog, {
     tierElement: element,
   })) as TierElement
-  if (result) updateElement(result)
+  if (result) store.updateElement(result)
 }
 
 async function createRow() {
   const result = (await openDialog(RowDialog)) as TierRow
-  if (result) list.value.tierRows.push(result)
+  if (result) store.addRow(result)
 }
 
 async function editRow(row: TierRow) {
   const result = (await openDialog(RowDialog, { rowData: row })) as TierRow
-  if (result) updateRow(result)
-}
-
-function updateRow(row: TierRow) {
-  const index = list.value.tierRows.findIndex(r => r.id === row.id)
-  list.value.tierRows.splice(index, 1, row)
-}
-
-function updateElement(element: TierElement) {
-  let index = list.value.availableElements.findIndex(e => e.id === element.id)
-  if (index <= -1) {
-    list.value.tierRows.forEach((row) => {
-      index = row.elements.findIndex(e => e.id === element.id)
-      if (index >= 0) row.elements.splice(index, 1, element)
-    })
-  } else {
-    list.value.availableElements.splice(index, 1, element)
-  }
+  if (result) store.updateRow(result)
 }
 
 function resetTierElements() {
-  list.value.tierRows.forEach((row) => {
-    list.value.availableElements.push(...row.elements)
-    row.elements = []
-  })
+  store.resetElements()
 }
 
 async function newFile() {
@@ -132,7 +101,7 @@ async function newFile() {
     cancelButtonText: 'No',
   })) as boolean
 
-  store.$reset()
+  if (successful) store.resetList()
 }
 
 async function exportList() {
