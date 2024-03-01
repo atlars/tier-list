@@ -1,9 +1,14 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
 
-defineProps<{
+interface Props {
   list: TierList
-}>()
+  showHandle?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  showHandle: true,
+})
 
 const drag = ref(false)
 
@@ -37,7 +42,7 @@ function closeActiveDialog() {
   >
     <!-- Tier rows -->
     <template #item="{ element: tierRow }">
-      <TierRow :row="tierRow">
+      <TierRow :row="tierRow" :show-handle="showHandle">
         <template #elements>
           <draggable
             :list="tierRow.elements"
