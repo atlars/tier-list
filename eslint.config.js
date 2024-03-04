@@ -17,6 +17,11 @@ export default antfu({
     'object-shorthand': ['off'],
     'object-curly-spacing': ['error', 'always'],
   },
+  typescript: {
+    overrides: {
+      'ts/ban-ts-comment': ['off'],
+    },
+  },
   vue: {
     vueVersion: 3,
     overrides: {
