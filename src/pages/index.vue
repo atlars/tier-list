@@ -102,6 +102,7 @@ function closeActiveDialog() {
       </draggable>
     </div>
 
+    <RenderedTierList :list="list" />
     <!-- Dialogs -->
     <div>
       <DialogWrapper />
