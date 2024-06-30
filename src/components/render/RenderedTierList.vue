@@ -48,9 +48,3 @@ defineProps<{
     </div>
   </div>
 </template>
-
-<style lang="css">
-a {
-    font-size: "12px";
-}
-</style>

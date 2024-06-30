@@ -1,10 +1,9 @@
+import 'src/assets/main.css'
 import { createApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { useDialog } from '@/composables/dialog'
 import RenderedTierList from '~/components/render/RenderedTierList.vue'
-import 'src/assets/main.css'
 
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   const exampleList: TierList = {
     id: '1',
     name: 'test',
@@ -32,5 +31,21 @@ export default defineEventHandler((event) => {
     ],
   }
   const app = createApp(h(RenderedTierList), { list: exampleList })
-  return renderToString(app)
+  const html = await renderToString(app)
+  const css = await useStorage('assets:generated').getItem(`main.css`)
+  const fullHtml = `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <style>
+      ${css}
+      </style>
+    </head>
+    <body>
+      ${html}
+    </body>
+  </html>
+`
+
+  return fullHtml
 })
