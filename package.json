@@ -16,8 +16,10 @@
     "@pinia/nuxt": "^0.5.1",
     "focus-trap": "^7.5.4",
     "pinia": "^2.1.7",
+    "puppeteer": "^22.12.1",
     "uuid": "^9.0.1",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.6.1",

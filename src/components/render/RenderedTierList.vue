@@ -5,14 +5,14 @@ defineProps<{
 </script>
 
 <template>
-  <div>
+  <div id="tier-list-container">
     <div
       v-for="(row, rowIndex) in list.tierRows"
       :key="rowIndex"
-      class="box-content flex h-full min-h-[5rem] flex-row border-t-2 border-black bg-slate-600 first:border-t-0"
+      class="box-content flex h-full min-h-[5rem] flex-row border-t-[2px] border-gray-700 bg-slate-600 first:border-t-0"
     >
       <div
-        class="flex w-24 items-center justify-center break-all border-r-2 border-black p-4"
+        class="flex w-24 items-center justify-center break-all border-r-[2px] border-gray-700 p-4"
         :style="{
           backgroundColor: row.backgroundColor ?? '#2563eb',
         }"
