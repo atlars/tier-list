@@ -6,7 +6,7 @@ import RenderedTierList from '~/components/render/RenderedTierList.vue'
 import { tierListSchema } from '~/types/schemas'
 
 export default defineEventHandler(async (event) => {
-  const body = await readValidatedBody(event, tierListSchema.safeParse);
+  const body = await readValidatedBody(event, tierListSchema.safeParse)
 
   if (!body.success) {
     throw createError({
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
   await page.setViewport({
     width: 900,
     height: 1000,
-    deviceScaleFactor: 2
+    deviceScaleFactor: 2,
   })
 
   // Set the content of the page
@@ -62,13 +62,13 @@ export default defineEventHandler(async (event) => {
 
   const screenshot = await element.screenshot({
     type: 'png',
-    omitBackground: true
+    omitBackground: true,
   })
 
   await browser.close()
   // Set the response headers for binary image data
   event.node.res.setHeader('Content-Type', 'image/png')
-  event.node.res.setHeader('Content-Disposition', 'inline; filename="tier-list.png"')
+  event.node.res.setHeader('Content-Disposition', `attachment; filename="${tierList.name || 'tier-list'}.png"`)
   // Return the screenshot buffer directly as binary data
   return screenshot
 })

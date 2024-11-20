@@ -39,7 +39,7 @@ async function newFile() {
 
 async function downloadTierList() {
   try {
-    const response = await $fetch.raw("/api/generate-image", {
+    const response = await $fetch.raw('/api/generate-image', {
       method: 'POST',
       body: JSON.stringify(list.value),
     })
@@ -47,14 +47,12 @@ async function downloadTierList() {
     const blob = new Blob([response._data as any], { type: response.headers.get('content-type') ?? 'image/png' })
     const url = window.URL.createObjectURL(blob)
 
+    let filename = `${list.value.name || 'tier-list'}_${Date.now()}.png`
     // Extract filename from Content-Disposition header
     const contentDisposition = response.headers.get('content-disposition')
-    let filename = `${list.value.name || 'tier-list'}.png`
     if (contentDisposition) {
-      const filenameMatch = contentDisposition.match(/filename="?(.+)"?/i)
-      if (filenameMatch) {
-        filename = filenameMatch[1]
-      }
+      const contentDispositionFileName = contentDisposition.split(';').find(n => n.includes('filename='))?.replace('filename=', '').replaceAll('"', '').trim()
+      if (contentDispositionFileName) filename = contentDispositionFileName
     }
 
     const link = document.createElement('a')
@@ -62,8 +60,6 @@ async function downloadTierList() {
     link.download = filename
     document.body.appendChild(link)
     link.click()
-    document.body.removeChild(link)
-
     window.URL.revokeObjectURL(url)
   } catch (error) {
     console.error('Error downloading tier list:', error)
@@ -104,11 +100,17 @@ function closeActiveDialog() {
 
     <!--- Available tier items -->
     <div class="mt-4 min-h-[7.0rem] border border-gray-200 bg-slate-50 p-4">
-      <draggable :list="list.availableElements" item-key="id" :group="{ name: 'tier-elements' }" animation="300"
+      <draggable
+        :list="list.availableElements"
+        item-key="id"
+        :group="{ name: 'tier-elements' }"
+        animation="300"
         :component-data="{
-      name: 'available-element',
-      class: 'flex flex-row flex-wrap items-center w-full h-full gap-3',
-    }" @start="closeActiveDialog">
+          name: 'available-element',
+          class: 'flex flex-row flex-wrap items-center w-full h-full gap-3',
+        }"
+        @start="closeActiveDialog"
+      >
         <template #item="{ element }">
           <TierElement :element="element" />
         </template>
@@ -116,9 +118,13 @@ function closeActiveDialog() {
         <template #footer>
           <div
             class="marker group box-border flex h-20 w-20 cursor-pointer items-center justify-center rounded border-[1px] border-gray-600 transition-transform hover:border-[2px] hover:border-gray-800"
-            @click="addTierElement">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 fill-gray-700 group-hover:fill-gray-800"
-              viewBox="0 -960 960 960">
+            @click="addTierElement"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-7 w-7 fill-gray-700 group-hover:fill-gray-800"
+              viewBox="0 -960 960 960"
+            >
               <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
             </svg>
           </div>
@@ -126,7 +132,7 @@ function closeActiveDialog() {
       </draggable>
     </div>
 
-    <RenderedTierList :list></RenderedTierList>
+    <RenderedTierList :list="list" />
 
     <!-- Dialogs -->
     <div>
