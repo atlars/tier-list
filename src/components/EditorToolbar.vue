@@ -7,7 +7,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex gap-2">
+  <div class="flex flex-wrap gap-2">
     <!-- New row button -->
     <button
       type="button"

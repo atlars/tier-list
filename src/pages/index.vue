@@ -92,6 +92,13 @@ function closeActiveDialog() {
 
 <template>
   <div class="mt-4 bg-white p-4 shadow-sm">
+    <input
+      v-model="list.name"
+      maxlength="100"
+      type="text"
+      class="w-full border-none text-2xl text-gray-900 outline-none"
+    >
+
     <EditorToolbar class="mt-4" @item-clicked="toolbarItemClicked" />
 
     <div class="my-8" />
