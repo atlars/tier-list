@@ -71,7 +71,6 @@ async function editRow(row: TierRow) {
       }"
     >
       <p
-        contenteditable="plaintext-only"
         class="text-white outline-none"
         :style="{
           color: props.row.textColor ?? 'black',
