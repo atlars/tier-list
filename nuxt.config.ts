@@ -43,6 +43,17 @@ export default defineNuxtConfig({
         dir: './.generated',
       },
     ],
+    routeRules: {
+      '/generate-image': {
+        security: {
+          // Allow 3 requests per 10 seconds
+          rateLimiter: {
+            tokensPerInterval: 3,
+            interval: 10000,
+          },
+        },
+      },
+    },
   },
   security: {
     enabled: true,
