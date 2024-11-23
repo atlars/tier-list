@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   srcDir: 'src/',
   serverDir: 'src/server/',
   devtools: { enabled: true },
-  modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@pinia/nuxt'],
+  modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@pinia/nuxt', 'nuxt-security'],
   css: ['@/assets/main.css'],
   routeRules: {
     '/': { ssr: false },
@@ -43,6 +43,16 @@ export default defineNuxtConfig({
         dir: './.generated',
       },
     ],
+  },
+  security: {
+    enabled: true,
+    hidePoweredBy: true,
+    csrf: true,
+    headers: {
+      contentSecurityPolicy: {
+        'img-src': ['*'],
+      },
+    },
   },
   hooks: {
     // Generate css file for the server side rendered components

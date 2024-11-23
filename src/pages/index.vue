@@ -38,8 +38,9 @@ async function newFile() {
 }
 
 async function downloadTierList() {
+  const { $csrfFetch } = useNuxtApp()
   try {
-    const response = await $fetch.raw('/api/generate-image', {
+    const response = await $csrfFetch.raw('/api/generate-image', {
       method: 'POST',
       body: JSON.stringify(list.value),
     })
