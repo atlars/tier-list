@@ -117,7 +117,7 @@ function closeActiveDialog() {
 
         <template #footer>
           <div
-            class="marker group box-border flex h-20 w-20 cursor-pointer items-center justify-center rounded border-[1px] border-gray-600 transition-transform hover:border-[2px] hover:border-gray-800"
+            class="marker group flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg border border-gray-400 bg-white shadow-sm transition-all hover:bg-gray-100"
             @click="addTierElement"
           >
             <svg
@@ -131,8 +131,6 @@ function closeActiveDialog() {
         </template>
       </draggable>
     </div>
-
-    <RenderedTierList :list="list" />
 
     <!-- Dialogs -->
     <div>
