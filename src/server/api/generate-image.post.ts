@@ -1,11 +1,18 @@
-import puppeteer from 'puppeteer'
 import 'src/assets/main.css'
+import type { Buffer } from 'node:buffer'
 import { createApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import RenderedTierList from '~/components/render/RenderedTierList.vue'
 import { tierListSchema } from '~/types/schemas'
 
+// Timeout to render the image in miliseconds
+const RENDER_TIMEOUT_MS = 3000
+
+/**
+ * Creates a png image from a a tier list
+ */
 export default defineEventHandler(async (event) => {
+  const logger = useLogger()
   const body = await readValidatedBody(event, tierListSchema.safeParse)
 
   if (!body.success) {
@@ -38,37 +45,66 @@ export default defineEventHandler(async (event) => {
     </body>
   </html>
 `
-  // Launch a new browser instance
-  const browser = await puppeteer.launch()
-  const page = await browser.newPage()
 
-  await page.setViewport({
-    width: 900,
-    height: 1000,
-    deviceScaleFactor: 2,
-  })
+  const browser = await useBrowser()
 
-  // Set the content of the page
-  await page.setContent(fullHtml, { waitUntil: 'networkidle0' })
+  async function renderImage(): Promise<Buffer> {
+    const page = await browser.newPage()
 
-  await page.waitForSelector('#tier-list-container')
+    await page.setViewport({
+      width: 900,
+      height: 1000,
+      deviceScaleFactor: 2,
+    })
+    await page.setContent(fullHtml, { waitUntil: 'networkidle0' })
+    await page.waitForSelector('#tier-list-container')
 
-  // Get the element
-  const element = await page.$('#tier-list-container')
+    const element = await page.$('#tier-list-container')
 
-  if (!element) {
-    throw new Error('Could not find the tier list element')
+    if (!element) {
+      logger.error('Could not find tier list element')
+      throw createError({
+        statusCode: 500,
+        message: 'Error rendering tier list',
+      })
+    }
+
+    const screenshot = await element.screenshot({
+      type: 'png',
+      omitBackground: true,
+    })
+    return screenshot
   }
 
-  const screenshot = await element.screenshot({
-    type: 'png',
-    omitBackground: true,
-  })
+  try {
+    const buffer = await Promise.race([
+      renderImage(),
+      timeout(RENDER_TIMEOUT_MS),
+    ])
 
-  await browser.close()
-  // Set the response headers for binary image data
-  event.node.res.setHeader('Content-Type', 'image/png')
-  event.node.res.setHeader('Content-Disposition', `attachment; filename="${tierList.name || 'tier-list'}.png"`)
-  // Return the screenshot buffer directly as binary data
-  return screenshot
+    event.node.res.setHeader('Content-Type', 'image/png')
+    event.node.res.setHeader('Content-Disposition', `attachment; filename="${tierList.name || 'tier-list'}.png"`)
+    return buffer
+  } catch (e) {
+    if (e instanceof Error) {
+      if (e.message === 'Timeout') {
+        throw createError({
+          statusCode: 408,
+          message: 'Timeout while generating image',
+        })
+      } else {
+        logger.error(e)
+        throw createError({
+          statusCode: 500,
+          message: 'Error rendering tier list',
+        })
+      }
+    }
+  }
 })
+
+function timeout(ms: number) {
+  return new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Timeout')), ms)
+  })
+}
