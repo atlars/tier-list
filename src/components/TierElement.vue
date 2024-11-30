@@ -49,7 +49,7 @@ async function editElement(element: TierElement) {
 
 <template>
   <div
-    class="relative flex max-h-[8rem] min-h-[5rem] min-w-[5rem] max-w-[8rem] items-center justify-center hover:cursor-default"
+    class="relative flex max-h-32 min-h-20 min-w-20 max-w-32 items-center justify-center hover:cursor-default"
     :style="{ backgroundColor: element.backgroundColor ?? '#5c7cff' }"
     @contextmenu="openContextMenu($event, element)"
   >
@@ -62,7 +62,7 @@ async function editElement(element: TierElement) {
     </div>
     <img
       v-if="element.imageUrl"
-      class="max-h-[8rem] min-h-[5rem] min-w-[5rem] object-cover object-top"
+      class="max-h-32 min-h-20 min-w-20 object-cover object-top"
       :src="element.imageUrl"
     >
   </div>

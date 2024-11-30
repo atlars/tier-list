@@ -50,7 +50,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="fixed inset-0 z-50 flex h-full max-h-full w-full justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-40 p-4 pt-8">
+  <div class="fixed inset-0 z-50 flex size-full max-h-full justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-40 p-4 pt-8">
     <div class="relative max-h-full w-full max-w-lg">
       <!-- Modal content -->
       <div ref="modal" class="relative rounded-lg bg-white shadow dark:bg-gray-700">
@@ -63,11 +63,11 @@ defineExpose({
           </h3>
           <button
             type="button"
-            class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+            class="ms-auto inline-flex size-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
             @click="cancel()"
           >
             <svg
-              class="h-3 w-3"
+              class="size-3"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -103,7 +103,7 @@ defineExpose({
 
             <input
               v-model="row.textColor"
-              class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
+              class="size-12 cursor-pointer appearance-none bg-transparent"
               type="color"
             >
           </div>
@@ -112,7 +112,7 @@ defineExpose({
             <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Background</label>
             <input
               v-model="row.backgroundColor"
-              class="h-12 w-12 cursor-pointer appearance-none bg-transparent"
+              class="size-12 cursor-pointer appearance-none bg-transparent"
               type="color"
             >
             <ul class="mt-2">
@@ -120,7 +120,7 @@ defineExpose({
                 v-for="(color, index) in tierColorPresets"
                 :key="index"
                 tabindex="0"
-                class="me-3 inline-block h-9 w-9 rounded-full border-1 border-white hover:cursor-pointer hover:border-slate-400"
+                class="me-3 inline-block size-9 rounded-full border-1 border-white hover:cursor-pointer hover:border-slate-400"
                 :style="{ backgroundColor: color }"
                 @click="setBackgroundColor(color)"
                 @keydown.enter="setBackgroundColor(color)"

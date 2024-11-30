@@ -125,12 +125,12 @@ function closeActiveDialog() {
 
         <template #footer>
           <div
-            class="marker group flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg border border-gray-400 bg-white shadow-sm transition-all hover:bg-gray-100"
+            class="marker group flex size-20 cursor-pointer items-center justify-center rounded-lg border border-gray-400 bg-white shadow-sm transition-all hover:bg-gray-100"
             @click="addTierElement"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-7 w-7 fill-gray-700 group-hover:fill-gray-800"
+              class="size-7 fill-gray-700 group-hover:fill-gray-800"
               viewBox="0 -960 960 960"
             >
               <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
