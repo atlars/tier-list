@@ -1,4 +1,3 @@
-import 'src/assets/main.css'
 import type { Buffer } from 'node:buffer'
 import { createApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
