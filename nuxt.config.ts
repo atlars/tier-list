@@ -14,25 +14,33 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@pinia/nuxt', 'nuxt-security'],
   css: ['@/assets/main.css'],
+
   routeRules: {
     '/': { ssr: false },
   },
+
   components: [
     {
       path: '~/components',
       pathPrefix: false,
     },
   ],
+
   imports: {
     autoImport: true,
     dirs: ['types/*.ts'],
   },
+
   runtimeConfig: {
     public: {
       vesion: pkg.version,
     },
   },
+
   nitro: {
+    imports: {
+      dirs: ['src/server/utils'],
+    },
     rollupConfig: {
       // @ts-expect-error
       plugins: [vue()],
@@ -55,6 +63,7 @@ export default defineNuxtConfig({
       },
     },
   },
+
   security: {
     enabled: true,
     hidePoweredBy: true,
@@ -65,6 +74,7 @@ export default defineNuxtConfig({
       },
     },
   },
+
   hooks: {
     // Generate css file for the server side rendered components
     'build:before': async () => {
@@ -80,4 +90,6 @@ export default defineNuxtConfig({
       fs.writeFileSync(cssPath, result.css)
     },
   },
+
+  compatibilityDate: '2024-11-30',
 })
