@@ -10,6 +10,7 @@ const emit = defineEmits<{
   <div class="flex flex-wrap gap-2">
     <!-- New row button -->
     <button
+      v-tooltip="'New list'"
       type="button"
       class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       @click="emit('itemClicked', ToolbarItem.NewFile)"
@@ -24,6 +25,7 @@ const emit = defineEmits<{
 
     <!-- Save button -->
     <button
+      v-tooltip="'Save'"
       type="button"
       class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
     >
@@ -36,6 +38,7 @@ const emit = defineEmits<{
 
     <!-- Download button -->
     <button
+      v-tooltip="'Download'"
       type="button"
       class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       @click="emit('itemClicked', ToolbarItem.Download)"
@@ -49,6 +52,7 @@ const emit = defineEmits<{
 
     <!-- Reset elements button -->
     <button
+      v-tooltip="'Reset'"
       type="button"
       class="rounded-lg bg-blue-600 p-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       @click="emit('itemClicked', ToolbarItem.ResetElements)"

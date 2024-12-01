@@ -15,6 +15,7 @@
   "dependencies": {
     "@pinia/nuxt": "^0.5.5",
     "consola": "^3.2.3",
+    "floating-vue": "^5.2.2",
     "focus-trap": "^7.6.2",
     "pinia": "^2.2.8",
     "puppeteer": "^23.9.0",
