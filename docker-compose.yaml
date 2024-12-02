@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:3000"
+    environment:
+      - NUXT_BROWSER_URL=http://chrome:9222
+    depends_on:
+      - chrome
+  chrome:
+    image: zenika/alpine-chrome:latest
+    ports:
+      - "9222:9222"
+    command: chromium-browser --headless --disable-gpu --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222
