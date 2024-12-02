@@ -18,3 +18,9 @@ pnpm dev
   * Flat file config using [@antfu/eslint-config](https://github.com/antfu/eslint-config) as a preset
 * [TailwindCSS](https://tailwindcss.com/)
 * [VueUse](https://vueuse.org/) composables
+
+## Deployment
+```bash
+# Run headless browser
+docker run -d -p 9222:9222 zenika/alpine-chrome:latest chromium-browser --headless --disable-gpu --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222
+```

@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import process from 'node:process'
 import vue from '@vitejs/plugin-vue'
 import postcss from 'postcss'
 import tailwindcss from 'tailwindcss'
@@ -35,6 +36,7 @@ export default defineNuxtConfig({
     public: {
       vesion: pkg.version,
     },
+    browserUrl: 'http://localhost:9222',
   },
 
   nitro: {

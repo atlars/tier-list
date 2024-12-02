@@ -16,8 +16,14 @@ const config = useRuntimeConfig()
     <main class="flex-grow">
       <NuxtPage />
     </main>
-    <footer class="my-2 text-center text-sm font-thin">
-      v{{ config.public.vesion }}
+    <footer class="my-2 text-center text-sm text-gray-400">
+      <span class="font-lg font-bold">
+        &lt;/&gt;
+      </span>
+      by
+      <a class="font-bold underline" href="https://github.com/atlars" target="_blank">Lars Thomae </a>
+
+      | v{{ config.public.vesion }}
     </footer>
   </div>
 </template>
