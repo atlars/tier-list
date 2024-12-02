@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import process from 'node:process'
 import vue from '@vitejs/plugin-vue'
 import postcss from 'postcss'
 import tailwindcss from 'tailwindcss'
@@ -14,6 +15,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@pinia/nuxt', 'nuxt-security'],
   css: ['@/assets/main.css'],
+  ssr: true,
 
   routeRules: {
     '/': { ssr: false },
@@ -35,9 +37,11 @@ export default defineNuxtConfig({
     public: {
       vesion: pkg.version,
     },
+    browswerUrl: process.env.NUXT_BROWSER_URL ?? 'http://localhost:9222',
   },
 
   nitro: {
+    preset: 'node-server',
     imports: {
       dirs: ['src/server/utils'],
     },
