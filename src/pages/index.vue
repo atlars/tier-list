@@ -12,6 +12,8 @@ const { editorTierList: list } = storeToRefs(store)
 
 const { openDialog, closeDialog } = useDialog()
 
+const isExportDownloading = ref(false)
+
 async function addTierElement() {
   const result = (await openDialog(ElementDialog)) as TierElement
   if (result) store.addElement(result)
@@ -39,6 +41,7 @@ async function newFile() {
 
 async function downloadTierList() {
   const { $csrfFetch } = useNuxtApp()
+  isExportDownloading.value = true
   try {
     const response = await $csrfFetch.raw('/api/generate-image', {
       method: 'POST',
@@ -64,6 +67,8 @@ async function downloadTierList() {
     window.URL.revokeObjectURL(url)
   } catch (error) {
     console.error('Error downloading tier list:', error)
+  } finally {
+    isExportDownloading.value = false
   }
 }
 
@@ -100,7 +105,7 @@ function closeActiveDialog() {
       class="w-full border-none text-2xl text-gray-900 outline-none"
     >
 
-    <EditorToolbar class="mt-4" @item-clicked="toolbarItemClicked" />
+    <EditorToolbar class="mt-4" :is-downloading="isExportDownloading" @item-clicked="toolbarItemClicked" />
 
     <div class="my-8" />
 
