@@ -11,6 +11,7 @@ const store = useEditorStore()
 const { editorTierList: list } = storeToRefs(store)
 
 const { openDialog, closeDialog } = useDialog()
+const { showSnackbar } = useSnackbar()
 
 const isExportDownloading = ref(false)
 
@@ -65,8 +66,10 @@ async function downloadTierList() {
     document.body.appendChild(link)
     link.click()
     window.URL.revokeObjectURL(url)
+    showSnackbar('Successfully downloaded image', 'success')
   } catch (error) {
     console.error('Error downloading tier list:', error)
+    showSnackbar('Failed to download image', 'error')
   } finally {
     isExportDownloading.value = false
   }

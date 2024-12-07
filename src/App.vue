@@ -26,4 +26,5 @@ const config = useRuntimeConfig()
       | v{{ config.public.vesion }}
     </footer>
   </div>
+  <Snackbar />
 </template>
