@@ -2,6 +2,7 @@ services:
   app:
     image: atlars/tier-list:$IMAGE_TAG
     build: .
+    restart: unless-stopped
     ports:
       - "8080:3000"
     environment:
@@ -12,3 +13,4 @@ services:
   chrome:
     image: zenika/alpine-chrome:latest
     command: chromium-browser --headless --disable-gpu --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222
+    restart: unless-stopped
