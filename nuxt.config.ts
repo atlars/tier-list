@@ -31,7 +31,6 @@ export default defineNuxtConfig({
     autoImport: true,
     dirs: ['types/*.ts'],
   },
-
   runtimeConfig: {
     public: {
       vesion: pkg.version,
