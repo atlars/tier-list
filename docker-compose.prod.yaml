@@ -1,6 +1,7 @@
 services:
   app:
     image: atlars/tier-list:$IMAGE_TAG
+    pull_policy: build
     build: .
     restart: unless-stopped
     environment:
@@ -10,20 +11,16 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.tierlist.loadbalancer.server.port=3000"
     networks:
-      - tierlist-prod
       - traefik
+      - default
     depends_on:
       - chrome
   chrome:
     image: zenika/alpine-chrome:latest
     command: chromium-browser --headless --disable-gpu --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222
     restart: unless-stopped
-    networks:
-      - tierlist-prod
 
-  networks:
-    traefik:
-      name: traefik
-      external: true
-    tierlist-prod:
-      driver: bridge
+networks:
+  traefik:
+    name: traefik
+    external: true
