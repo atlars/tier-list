@@ -3,11 +3,12 @@ services:
     image: atlars/tier-list:$IMAGE_TAG
     build: .
     restart: unless-stopped
-    ports:
-      - "8080:3000"
     environment:
       - NUXT_BROWSER_URL=http://chrome:9222
       - NUXT_PUBLIC_VERSION=$IMAGE_TAG
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.tierlist.loadbalancer.server.port=3000"
     depends_on:
       - chrome
   chrome:
