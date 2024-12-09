@@ -33,7 +33,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      vesion: pkg.version,
+      version: pkg.version,
     },
     browserUrl: 'http://localhost:9222',
   },

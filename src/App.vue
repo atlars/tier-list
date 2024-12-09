@@ -23,7 +23,7 @@ const config = useRuntimeConfig()
       by
       <a class="font-bold underline" href="https://github.com/atlars" target="_blank">Lars Thomae </a>
 
-      | v{{ config.public.vesion }}
+      | v{{ config.public.version }}
     </footer>
   </div>
   <Snackbar />
