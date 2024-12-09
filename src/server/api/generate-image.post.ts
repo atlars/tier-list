@@ -45,34 +45,41 @@ export default defineEventHandler(async (event) => {
   </html>
 `
 
-  const browser = await useBrowser()
-
-  async function renderImage(): Promise<Buffer> {
+  async function renderImage(): Promise<Uint8Array> {
+    const browser = await useBrowser()
     const page = await browser.newPage()
+    try {
+      await page.setViewport({
+        width: 900,
+        height: 1000,
+        deviceScaleFactor: 2,
+      })
+      await page.setContent(fullHtml, { waitUntil: 'networkidle0' })
+      await page.waitForSelector('#tier-list-container')
 
-    await page.setViewport({
-      width: 900,
-      height: 1000,
-      deviceScaleFactor: 2,
-    })
-    await page.setContent(fullHtml, { waitUntil: 'networkidle0' })
-    await page.waitForSelector('#tier-list-container')
+      const element = await page.$('#tier-list-container')
 
-    const element = await page.$('#tier-list-container')
+      if (!element) {
+        logger.error('Could not find tier list element')
+        throw createError({
+          statusCode: 500,
+          message: 'Error rendering tier list',
+        })
+      }
 
-    if (!element) {
-      logger.error('Could not find tier list element')
+      const screenshot = await element.screenshot({
+        type: 'png',
+        omitBackground: true,
+      })
+      return screenshot
+    } catch (e) {
       throw createError({
         statusCode: 500,
         message: 'Error rendering tier list',
       })
+    } finally {
+      await page.close()
     }
-
-    const screenshot = await element.screenshot({
-      type: 'png',
-      omitBackground: true,
-    })
-    return screenshot
   }
 
   try {
